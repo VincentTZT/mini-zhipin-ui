@@ -1,0 +1,79 @@
+.vx-container {
+  position: absolute;
+}
+
+.vx-card-header * {
+  font-weight: bold;
+  font-size: medium;
+}
+
+.vx-card-body {
+  padding-top: 5px !important;
+  padding-bottom: 10px !important;
+}
+
+.vx-card-delimiter {
+  border: 1px solid #c8c9cc;
+  margin-bottom: 10px !important;
+}
+
+.slider-age-range {
+  padding-top: 10px;
+
+  .el-slider {
+    width: 70%;
+  }
+
+  .el-text {
+    padding-left: 20px;
+  }
+}
+
+.el-card__header {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+.highlight {
+  background-color: yellow;
+  font-weight: bold;
+}
+
+.badge-class-match {
+  height: 14px !important;
+  width: 14px !important;
+  background-color: yellow !important;
+  border-color: black !important;
+}
+
+.keyword-position {
+  top: 150px;
+  right: 50px;
+  width: 400px;
+  position: fixed;
+  color: var(--el-color-white);
+  border: none;
+  border-bottom: none !important;
+  border-top: none !important;
+  border-radius: 3px;
+}
+
+.chat-used-position {
+  bottom: 150px;
+  right: 70px;
+  position: fixed;
+  color: red;
+}
+
+.el-collapse-item__header {
+  height: 30px !important;
+  width: 20% !important;
+}
+
+.el-collapse-item__header.is-active {
+  width: 100% !important;
+}
+
+.el-collapse-item__content {
+  padding-bottom: 5px !important;
+}
