@@ -1,25 +1,26 @@
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import _ from 'lodash'
-import { ElInput, ElMessage, ElNotification } from 'element-plus'
-import ZhipinApi from '@/api/zhi-pin-api'
+import { ElInput, ElMessage, ElNotification, ElLoading } from 'element-plus'
+import ZhiPinApi from '@/views/home/zhi-pin.api'
 import { setZhiPinToken, removeAllCookies } from '@/utils/cookies'
-
-import staticData from './static-data'
+import { errorCallBack } from '@/utils/request'
 
 export default {
   setup() {
     const keywordInputRef = ref<InstanceType<typeof ElInput>>()
     const loginFormRef = ref<FormInstance>()
 
+    let fullScreenLoading = null as any
+
     const loginObj = reactive({
       authorized: false,
       cookieString: null as string | null,
-      phone: null as string | null,
+      phone: '15738909987' as string | null,
 
       rules: reactive<FormRules>({
         cookieString: [{ required: true, message: '请输入认证信息', trigger: 'blur' }],
-        phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }]
+        phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
       }),
 
       onLogin: async (formRef: FormInstance) => {
@@ -36,42 +37,158 @@ export default {
               message: Object.entries(fields)
                 .map((item: any) => item[1][0])
                 .map((item: any) => item.message)
-                .join(', ')
+                .join(', '),
             })
           }
         })
-      }
+      },
+    })
+
+    const filterObj = reactive({
+      loading: false,
+
+      positionSelected: '',
+      positionList: [] as SelectorModel[],
+
+      ageRange: [18, 46],
+      majorList: [] as SelectorModel[],
+      majorSelected: [0],
+      livenessList: [] as SelectorModel[],
+      livenessSelected: [0],
+      genderList: [] as SelectorModel[],
+      genderSelected: [0],
+      recentNotViewList: [] as SelectorModel[],
+      recentNotViewSelected: [0],
+      exchangeResumeWithColleagueList: [] as SelectorModel[],
+      exchangeResumeWithColleagueSelected: [0],
+      schoolLevelList: [] as SelectorModel[],
+      schoolLevelSelected: [0],
+      switchJobFrequencyList: [] as SelectorModel[],
+      switchJobFrequencySelected: [0],
+      keyworkList: [] as SelectorModel[],
+      keyworkSelected: [] as number[],
+      experienceRequireList: [] as SelectorModel[],
+      experienceRequireSelected: [0],
+      educationalRequireList: [] as SelectorModel[],
+      educationalRequireSelected: [0],
+      salaryRequireList: [] as SelectorModel[],
+      salaryRequireSelected: [0],
+      intentionList: [] as SelectorModel[],
+      intentionSelected: [0],
+
+      displayFirstDegree: false,
+      firstDegreeChecked: false,
+      firstDegree: null as number | null,
+
+      onChangePosition: (value: string) => {
+        if (!value) {
+          ElNotification({
+            title: 'Error',
+            message: '请先选择要筛选的岗位！',
+            type: 'error',
+            duration: 2000,
+          })
+          return
+        }
+        filterObj.loading = true
+        ZhiPinApi.getFilterOptions(value).then((res: FilterModel) => {
+          filterObj.majorList = res.majorList || []
+          filterObj.livenessList = res.livenessList || []
+          filterObj.genderList = res.genderList || []
+          filterObj.recentNotViewList = res.recentNotViewList || []
+          filterObj.exchangeResumeWithColleagueList = res.exchangeResumeWithColleagueList || []
+          filterObj.schoolLevelList = res.schoolLevelList || []
+          filterObj.switchJobFrequencyList = res.switchJobFrequencyList || []
+          filterObj.keyworkList = res.keyworkList || []
+          filterObj.experienceRequireList = res.experienceRequireList || []
+          filterObj.educationalRequireList = res.educationalRequireList || []
+          filterObj.salaryRequireList = res.salaryRequireList || []
+          filterObj.intentionList = res.intentionList || []
+          filterObj.firstDegree = res.firstDegree
+
+          filterObj.majorSelected = [0]
+          filterObj.livenessSelected = [0]
+          filterObj.genderSelected = [0]
+          filterObj.recentNotViewSelected = [0]
+          filterObj.exchangeResumeWithColleagueSelected = [0]
+          filterObj.schoolLevelSelected = [0]
+          filterObj.switchJobFrequencySelected = [0]
+          filterObj.keyworkSelected = []
+          filterObj.experienceRequireSelected = [0]
+          filterObj.educationalRequireSelected = [0]
+          filterObj.salaryRequireSelected = [0]
+          filterObj.intentionSelected = [0]
+          filterObj.displayFirstDegree = false
+          filterObj.firstDegreeChecked = false
+          filterObj.loading = false
+        })
+      },
+
+      ageRangeFormat: (value: number): string => value + '岁',
+
+      onChangeMajor: (values: number[]) => {
+        filterObj.majorSelected =
+          values.length === 0 || values[values.length - 1] === 0 ? [0] : values.filter((i) => i !== 0)
+      },
+
+      onChangeLiveness: (values: number[]) => {
+        filterObj.livenessSelected = values.length === 0 ? [0] : [values[values.length - 1]]
+      },
+
+      onChangeGender: (values: number[]) => {
+        filterObj.genderSelected = values.length === 0 ? [0] : [values[values.length - 1]]
+      },
+
+      onChangeRecentNotView: (values: number[]) => {
+        filterObj.recentNotViewSelected = values.length === 0 ? [0] : [values[values.length - 1]]
+      },
+
+      onChangeExchangeResumeWithColleague: (values: number[]) => {
+        filterObj.exchangeResumeWithColleagueSelected = values.length === 0 ? [0] : [values[values.length - 1]]
+      },
+
+      onChangeSchoolLevel: (values: number[]) => {
+        filterObj.schoolLevelSelected =
+          values.length === 0 || values[values.length - 1] === 0 ? [0] : values.filter((i) => i !== 0)
+        filterObj.displayFirstDegree = filterObj.schoolLevelSelected[0] !== 0
+      },
+
+      onChangeSwitchJobFrequency: (values: number[]) => {
+        filterObj.switchJobFrequencySelected = values.length === 0 ? [0] : [values[values.length - 1]]
+      },
+
+      onChangeExperienceRequire: (values: number[]) => {
+        filterObj.experienceRequireSelected =
+          values.length === 0 || values[values.length - 1] === 0 ? [0] : values.filter((i) => i !== 0)
+      },
+
+      onChangeEducationalRequire: (values: number[]) => {
+        filterObj.educationalRequireSelected =
+          values.length === 0 || values[values.length - 1] === 0 ? [0] : values.filter((i) => i !== 0)
+      },
+
+      onChangeSalaryRequire: (values: number[]) => {
+        filterObj.salaryRequireSelected = values.length === 0 ? [0] : [values[values.length - 1]]
+      },
+
+      onChangeIntention: (values: number[]) => {
+        filterObj.intentionSelected =
+          values.length === 0 || values[values.length - 1] === 0 ? [0] : values.filter((i) => i !== 0)
+      },
+
+      onQuery: () => {
+        viewObj.jobhunterList.length = 0
+        viewObj.pageNumber = 1
+        loadData()
+      },
+
+      isAuthorizedAndPositionSelectedValid: (): boolean => loginObj.authorized && Boolean(filterObj.positionSelected),
+
+      filterLoopCount: 0,
     })
 
     const viewObj = reactive({
-      positionSelected: '',
-      positionList: [] as SelectorModel[],
-      jobhunterArray: [] as Jobhunter[],
-
-      ageRange: [18, 45],
-      livenessList: staticData.livenessList as SelectorModel[],
-      livenessSelected: [0],
-      genderList: staticData.genderList as SelectorModel[],
-      genderSelected: [0],
-      recentNotViewList: staticData.recentNotViewList as SelectorModel[],
-      recentNotViewSelected: [0],
-      exchangeResumeWithColleagueList: staticData.exchangeResumeWithColleagueList as SelectorModel[],
-      exchangeResumeWithColleagueSelected: [0],
-      schoolLevelList: staticData.schoolLevelList as SelectorModel[],
-      schoolLevelSelected: [0],
-      switchJobFrequencyList: staticData.switchJobFrequencyList as SelectorModel[],
-      switchJobFrequencySelected: [0],
-      keyworkList: [] as SelectorModel[],
-      keyworkSelected: [0],
-      experienceRequireList: staticData.experienceRequireList as SelectorModel[],
-      experienceRequireSelected: [0],
-      educationalRequireList: staticData.educationalRequireList as SelectorModel[],
-      educationalRequireSelected: [0],
-      salaryRequireList: staticData.salaryRequireList as SelectorModel[],
-      salaryRequireSelected: [0],
-      intentionList: staticData.intentionList as SelectorModel[],
-      intentionSelected: [0],
-      firstSchoolLevel: false,
+      jobhunterList: [] as Jobhunter[],
 
       elementTagTypes: ['primary', 'success', 'info', 'warning', 'danger'],
       loading: false,
@@ -81,23 +198,11 @@ export default {
         isAddFocus: false,
         inputRef: ref<InstanceType<typeof ElInput>>(),
         inputHandleEnter: () => {
-          if (_.trim(viewObj.searchKeyword.inputValue)) {
-            viewObj.searchKeyword.text = Array.from(
-              new Set(viewObj.searchKeyword.text.concat(viewObj.searchKeyword.inputValue.split(/\s+/).filter(Boolean)))
-            )
-          }
-
-          viewObj.searchKeyword.inputValue = ''
+          splitSearchKeywords()
         },
         inputHandleClose: () => {
-          if (_.trim(viewObj.searchKeyword.inputValue)) {
-            viewObj.searchKeyword.text = Array.from(
-              new Set(viewObj.searchKeyword.text.concat(viewObj.searchKeyword.inputValue.split(/\s+/).filter(Boolean)))
-            )
-          }
-
+          splitSearchKeywords()
           viewObj.searchKeyword.isAddFocus = false
-          viewObj.searchKeyword.inputValue = ''
         },
         handleClose: (keyword: string) => {
           viewObj.searchKeyword.text.splice(viewObj.searchKeyword.text.indexOf(keyword), 1)
@@ -113,148 +218,82 @@ export default {
         },
         copyKeyword: () => {
           navigator.clipboard.writeText(viewObj.searchKeyword.text.join(' ')).catch((e) => errorCallBack(e))
-        }
+        },
       },
       pageNumber: 1,
       triggerChatUsed: 0,
 
-      onQuery: () => {
-        viewObj.jobhunterArray.length = 0
-        viewObj.pageNumber = 1
-        viewObj.loading = true
-        loadData()
-      },
-
       onLoadMore: () => {
         if (viewObj.loading) return
-        viewObj.loading = true
         loadData()
       },
-
-      ageRangeFormat: (value: number): string => value + '岁',
 
       replaceNewLinesWithBr: (text: string) => {
         const content = text.replace(/\n/g, '<br>')
         return viewObj.searchKeyword.text.length > 0 ? markHighlightText(content) : content
       },
 
-      assembleTags: (labels: String[]): ElementTagModel[] => {
+      assembleTags: (labels: string[]): ElementTagModel[] => {
         return labels.map(
           (label, index) =>
             ({
               label: label,
-              type: viewObj.elementTagTypes[index % viewObj.elementTagTypes.length]
+              type: viewObj.elementTagTypes[index % viewObj.elementTagTypes.length],
             }) as ElementTagModel
         )
       },
 
-      onChangeLiveness: (values: number[]) => {
-        viewObj.livenessSelected = values.length === 0 ? [0] : [values[values.length - 1]]
-      },
-
-      onChangeGender: (values: number[]) => {
-        viewObj.genderSelected = values.length === 0 ? [0] : [values[values.length - 1]]
-      },
-
-      onChangeRecentNotView: (values: number[]) => {
-        viewObj.recentNotViewSelected = values.length === 0 ? [0] : [values[values.length - 1]]
-      },
-
-      onChangeExchangeResumeWithColleague: (values: number[]) => {
-        viewObj.exchangeResumeWithColleagueSelected = values.length === 0 ? [0] : [values[values.length - 1]]
-      },
-
-      onChangeSwitchJobFrequency: (values: number[]) => {
-        viewObj.switchJobFrequencySelected = values.length === 0 ? [0] : [values[values.length - 1]]
-      },
-
-      onChangeSchoolLevel: (values: number[]) => {
-        viewObj.schoolLevelSelected =
-          values.length === 0 || values[values.length - 1] === 0 ? [0] : values.filter((i) => i !== 0)
-      },
-
-      onChangeExperienceRequire: (values: number[]) => {
-        viewObj.experienceRequireSelected =
-          values.length === 0 || values[values.length - 1] === 0 ? [0] : values.filter((i) => i !== 0)
-      },
-
-      onChangeEducationalRequire: (values: number[]) => {
-        viewObj.educationalRequireSelected =
-          values.length === 0 || values[values.length - 1] === 0 ? [0] : values.filter((i) => i !== 0)
-      },
-
-      onChangeSalaryRequire: (values: number[]) => {
-        viewObj.salaryRequireSelected =
-          values.length === 0 || values[values.length - 1] === 0 ? [0] : values.filter((i) => i !== 0)
-      },
-
-      onChangeIntention: (values: number[]) => {
-        viewObj.intentionSelected =
-          values.length === 0 || values[values.length - 1] === 0 ? [0] : values.filter((i) => i !== 0)
-      },
-
-      isMatchsearchKeyword: (content: string): boolean => {
+      isMatchSearchKeyword: (content: string | null): boolean => {
         const keywords = viewObj.searchKeyword.text.map((keyword) => keyword.toLowerCase())
-        return keywords.some((keyword) => content.includes(keyword))
+        return keywords.some((keyword) => content?.toLowerCase().includes(keyword))
       },
 
-      onTriggerChat: (index: number) => {
-        if (!viewObj.positionSelected) {
+      onTriggerChat: (chatPayload: ChatPayloadModel) => {
+        if (!filterObj.isAuthorizedAndPositionSelectedValid()) {
           ElNotification({
             title: 'Error',
             message: '请先选择要筛选的岗位！',
             type: 'error',
-            duration: 2000
+            duration: 2000,
           })
           return
         }
-        // ZhipinApi.triggerChar(viewObj.jobhunterArray[index], viewObj.positionSelected).then(
-        //   (res: ResultModel<String>) => {
-        //     if (res.success && res.body != null) {
-        //       viewObj.jobhunterArray[index].triggerChatFlag = true
-        //       loadTriggerChatUsed()
-        //       ElNotification({
-        //         title: 'Success',
-        //         message: '打招呼成功！',
-        //         type: 'success',
-        //         duration: 2000
-        //       })
-        //     } else {
-        //       errorCallBack(res)
-        //     }
-        //   }
-        // )
+        ZhiPinApi.triggerChar(chatPayload)
+          .then((res: string) => {
+            if (res === 'Success') {
+              chatPayload.triggeredChatFlag = true
+              ElNotification({
+                title: 'Success',
+                message: '打招呼成功！',
+                type: 'success',
+                duration: 2000,
+              })
+            } else {
+              errorCallBack(res)
+            }
+          })
+          .finally(() => loadTriggerChatUsed())
       },
-
-      isAuthorizedAndPositionSelectedValid: (): boolean => loginObj.authorized && Boolean(viewObj.positionSelected)
     })
 
     onMounted(() => {
       removeAllCookies()
       loginObj.authorized = false
-      loginObj.cookieString = ''
-      viewObj.jobhunterArray = []
+      loginObj.cookieString =
+        'ab_guid=ba268c5f-de6e-47b3-abbb-6fd73aa434d4; lastCity=101280100; wt2=DFLLX9xV1j0CM34VfNKiqoRq6l4txpRiB7dQ1jtcpgdmrOXV6KPayT2eEmqnxSYeiNGHju3V2vFXj8rypJ8mj1Q~~; wbg=1; zp_at=i4-g8vg1POE7A_RdQXR4kf7-HSVgxtkweqayKGNF1ig~; __g=-; Hm_lvt_194df3105ad7148dcf2b98a91b5e727a=1757094350,1757120915,1757142310,1757232745; Hm_lpvt_194df3105ad7148dcf2b98a91b5e727a=1757232745; HMACCOUNT=3C19152041F93063; bst=V2SdskEOH121ZgXdJsyBoRKSuw7DnSzQ~~|SdskEOH121ZgXdJsyBoRKSuw7DnVwQ~~; __c=1757232745; __a=93107989.1757003446.1757142310.1757232745.129.6.21.129'
+      viewObj.jobhunterList = []
     })
 
-    const scrollDisabled = computed<boolean>(() => viewObj.jobhunterArray.length === 0)
+    const scrollDisabled = computed<boolean>(() => viewObj.jobhunterList.length === 0)
 
     return {
       loginObj,
+      filterObj,
       viewObj,
       onMounted,
       scrollDisabled,
       keywordInputRef,
-      loginFormRef
-    }
-
-    function errorCallBack(res: ResultModel<any>) {
-      console.log('err' + res) // for debug
-      ElNotification({
-        title: 'Error',
-        message: (res.body ? JSON.stringify(res.body) : res.message) || res.message,
-        type: 'error',
-        duration: 2000
-      })
+      loginFormRef,
     }
 
     function markHighlightText(content: string): string {
@@ -264,19 +303,45 @@ export default {
     }
 
     function loadData() {
-      // MiniZhipinApi.getJobhunterList(viewObj)
-      //   .then((res: ResultModel<Jobhunter[]>) => {
-      //     if (res.success && res.body != null) {
-      //       viewObj.jobhunterArray = uniqueByProperty([...viewObj.jobhunterArray, ...(res.body as [])], 'jobhunterId')
-      //       viewObj.pageNumber = res.body[0].pageNumber
-      //       viewObj.loading = false
-      //     } else {
-      //       errorCallBack(res)
-      //     }
-      //   })
-      //   .finally(() => {
-      //     viewObj.loading = false
-      //   })
+      viewObj.loading = true
+      ZhiPinApi.getJobhunterList(filterObj, viewObj.pageNumber)
+        .then((res: Jobhunter[]) => {
+          if (viewObj.searchKeyword.text.length > 0) {
+            res = res.filter((item: Jobhunter) => viewObj.isMatchSearchKeyword(JSON.stringify(item)))
+            if (res.length === 0) {
+              if (filterObj.filterLoopCount < 2) {
+                filterObj.filterLoopCount++
+                ElNotification({
+                  title: 'Warning',
+                  message: `没有符合条件的求职人，正在第${filterObj.filterLoopCount + 1}轮查找！`,
+                  type: 'warning',
+                  duration: 2000,
+                })
+                setTimeout(() => {
+                  loadData()
+                }, 3000)
+                return
+              } else {
+                filterObj.filterLoopCount = 0
+                ElNotification({
+                  title: 'Warning',
+                  message: '无法找到符合条件的求职人, 请调整关键字后重新查询！',
+                  type: 'warning',
+                })
+              }
+            } else {
+              filterObj.filterLoopCount = 0
+            }
+          }
+
+          viewObj.jobhunterList = uniqueByProperty([...viewObj.jobhunterList, ...res], 'jobhunterId')
+        })
+        .finally(() => {
+          viewObj.pageNumber++
+          if (filterObj.filterLoopCount === 0) {
+            viewObj.loading = false
+          }
+        })
     }
 
     function uniqueByProperty(array: any[], key: string) {
@@ -288,33 +353,41 @@ export default {
     }
 
     function login() {
-      ZhipinApi.getPositionList().then((res: any) => {
-        viewObj.positionList.length = 0
-        if (res.success && res.body != null) {
+      fullScreenLoading = ElLoading.service({
+        lock: true,
+        text: 'Loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+      })
+      loadTriggerChatUsed()
+      ZhiPinApi.getPositionList()
+        .then((res: SelectorModel[]) => {
+          filterObj.positionList.length = 0
+          filterObj.positionList = [...res]
+          filterObj.positionSelected = (filterObj.positionList[0]?.value as string) || ''
+          viewObj.jobhunterList.length = 0
+          filterObj.onChangePosition(filterObj.positionSelected)
           loginObj.authorized = true
-          viewObj.positionList = [...res.body]
-          viewObj.positionSelected = viewObj.positionList[0].value as string
-          viewObj.jobhunterArray.length = 0
-          loadTriggerChatUsed()
           ElMessage({
             message: '登陆成功',
-            type: 'success'
+            type: 'success',
           })
-        } else {
-          errorCallBack(res)
-        }
-      })
+        })
+        .finally(() => fullScreenLoading.close())
     }
 
     function loadTriggerChatUsed() {
-      //   MiniZhipinApi.getTriggerChatUsed().then((res: ResultModel<String>) => {
-      //     viewObj.triggerChatUsed = 0
-      //     if (res.success && res.body != null) {
-      //       viewObj.triggerChatUsed = Number(res.body.match(/\d+/g)?.join('')) || 0
-      //     } else {
-      //       errorCallBack(res)
-      //     }
-      //   })
+      ZhiPinApi.getTriggerChatUsed().then(
+        (res: string | null) => (viewObj.triggerChatUsed = Number(res?.match(/\d+/g)?.join('')) || 0)
+      )
     }
-  }
+
+    function splitSearchKeywords() {
+      if (_.trim(viewObj.searchKeyword.inputValue)) {
+        viewObj.searchKeyword.text = Array.from(
+          new Set(viewObj.searchKeyword.text.concat(viewObj.searchKeyword.inputValue.split(/[\s,，]+/).filter(Boolean)))
+        )
+      }
+      viewObj.searchKeyword.inputValue = ''
+    }
+  },
 }

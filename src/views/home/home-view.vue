@@ -7,6 +7,7 @@
     >
       <el-header height="auto">
         <el-form
+          name="loginForm"
           :model="loginObj"
           label-width="150px"
           label-position="left"
@@ -31,11 +32,23 @@
           </el-form-item>
         </el-form>
 
-        <el-form :model="viewObj" label-width="150px" label-position="left" v-if="loginObj.authorized">
+        <el-form
+          name="filterForm"
+          v-loading="filterObj.loading"
+          :model="filterObj"
+          label-width="150px"
+          label-position="left"
+          v-if="loginObj.authorized"
+        >
           <el-form-item label="岗位">
-            <el-select v-model="viewObj.positionSelected" clearable placeholder="请选择岗位" style="width: 450px">
+            <el-select
+              v-model="filterObj.positionSelected"
+              placeholder="请选择岗位"
+              style="width: 450px"
+              @change="filterObj.onChangePosition"
+            >
               <el-option
-                v-for="(item, index) in viewObj.positionList"
+                v-for="(item, index) in filterObj.positionList"
                 :key="index"
                 :label="item.label"
                 :value="item.value"
@@ -44,19 +57,31 @@
           </el-form-item>
           <el-form-item class="slider-age-range" label="年龄">
             <el-slider
-              v-model="viewObj.ageRange"
+              v-model="filterObj.ageRange"
               range
-              :format-tooltip="viewObj.ageRangeFormat"
+              :format-tooltip="filterObj.ageRangeFormat"
               :min="18"
-              :max="45"
+              :max="46"
               style="width: 450px"
             />
-            <el-text>{{ viewObj.ageRange }}</el-text>
+            <el-text>{{ filterObj.ageRange }}</el-text>
+          </el-form-item>
+          <el-form-item label="专业">
+            <el-checkbox-group v-model="filterObj.majorSelected" @change="filterObj.onChangeMajor">
+              <el-checkbox-button
+                v-for="(item, index) in filterObj.majorList"
+                :key="index"
+                :label="item.label"
+                :value="item.value"
+              >
+                {{ item.label }}
+              </el-checkbox-button>
+            </el-checkbox-group>
           </el-form-item>
           <el-form-item label="活跃度[单选]">
-            <el-checkbox-group v-model="viewObj.livenessSelected" @change="viewObj.onChangeLiveness">
+            <el-checkbox-group v-model="filterObj.livenessSelected" @change="filterObj.onChangeLiveness">
               <el-checkbox-button
-                v-for="(item, index) in viewObj.livenessList"
+                v-for="(item, index) in filterObj.livenessList"
                 :key="index"
                 :label="item.label"
                 :value="item.value"
@@ -66,9 +91,9 @@
             </el-checkbox-group>
           </el-form-item>
           <el-form-item label="性别">
-            <el-checkbox-group v-model="viewObj.genderSelected" @change="viewObj.onChangeGender">
+            <el-checkbox-group v-model="filterObj.genderSelected" @change="filterObj.onChangeGender">
               <el-checkbox-button
-                v-for="(item, index) in viewObj.genderList"
+                v-for="(item, index) in filterObj.genderList"
                 :key="index"
                 :label="item.label"
                 :value="item.value"
@@ -78,9 +103,9 @@
             </el-checkbox-group>
           </el-form-item>
           <el-form-item label="近期没有看过">
-            <el-checkbox-group v-model="viewObj.recentNotViewSelected" @change="viewObj.onChangeRecentNotView">
+            <el-checkbox-group v-model="filterObj.recentNotViewSelected" @change="filterObj.onChangeRecentNotView">
               <el-checkbox-button
-                v-for="(item, index) in viewObj.recentNotViewList"
+                v-for="(item, index) in filterObj.recentNotViewList"
                 :key="index"
                 :label="item.label"
                 :value="item.value"
@@ -91,11 +116,11 @@
           </el-form-item>
           <el-form-item label="是否与同事交换简历">
             <el-checkbox-group
-              v-model="viewObj.exchangeResumeWithColleagueSelected"
-              @change="viewObj.onChangeExchangeResumeWithColleague"
+              v-model="filterObj.exchangeResumeWithColleagueSelected"
+              @change="filterObj.onChangeExchangeResumeWithColleague"
             >
               <el-checkbox-button
-                v-for="(item, index) in viewObj.exchangeResumeWithColleagueList"
+                v-for="(item, index) in filterObj.exchangeResumeWithColleagueList"
                 :key="index"
                 :label="item.label"
                 :value="item.value"
@@ -105,9 +130,9 @@
             </el-checkbox-group>
           </el-form-item>
           <el-form-item label="院校">
-            <el-checkbox-group v-model="viewObj.schoolLevelSelected" @change="viewObj.onChangeSchoolLevel">
+            <el-checkbox-group v-model="filterObj.schoolLevelSelected" @change="filterObj.onChangeSchoolLevel">
               <el-checkbox-button
-                v-for="(item, index) in viewObj.schoolLevelList"
+                v-for="(item, index) in filterObj.schoolLevelList"
                 :key="index"
                 :label="item.label"
                 :value="item.value"
@@ -116,19 +141,20 @@
               </el-checkbox-button>
             </el-checkbox-group>
             <el-checkbox
+              v-if="filterObj.displayFirstDegree"
               style="padding-left: 10px"
-              v-model="viewObj.firstSchoolLevel"
+              v-model="filterObj.firstDegreeChecked"
               label="只看第一学历(全日制本科)"
               size="large"
             />
           </el-form-item>
           <el-form-item label="跳槽频率[单选]">
             <el-checkbox-group
-              v-model="viewObj.switchJobFrequencySelected"
-              @change="viewObj.onChangeSwitchJobFrequency"
+              v-model="filterObj.switchJobFrequencySelected"
+              @change="filterObj.onChangeSwitchJobFrequency"
             >
               <el-checkbox-button
-                v-for="(item, index) in viewObj.switchJobFrequencyList"
+                v-for="(item, index) in filterObj.switchJobFrequencyList"
                 :key="index"
                 :label="item.label"
                 :value="item.value"
@@ -138,9 +164,9 @@
             </el-checkbox-group>
           </el-form-item>
           <el-form-item label="牛人关键词">
-            <el-checkbox-group v-model="viewObj.experienceRequireSelected" @change="viewObj.onChangeExperienceRequire">
+            <el-checkbox-group v-model="filterObj.keyworkSelected">
               <el-checkbox-button
-                v-for="(item, index) in viewObj.experienceRequireList"
+                v-for="(item, index) in filterObj.keyworkList"
                 :key="index"
                 :label="item.label"
                 :value="item.value"
@@ -150,9 +176,12 @@
             </el-checkbox-group>
           </el-form-item>
           <el-form-item label="经验要求">
-            <el-checkbox-group v-model="viewObj.experienceRequireSelected" @change="viewObj.onChangeExperienceRequire">
+            <el-checkbox-group
+              v-model="filterObj.experienceRequireSelected"
+              @change="filterObj.onChangeExperienceRequire"
+            >
               <el-checkbox-button
-                v-for="(item, index) in viewObj.experienceRequireList"
+                v-for="(item, index) in filterObj.experienceRequireList"
                 :key="index"
                 :label="item.label"
                 :value="item.value"
@@ -163,11 +192,11 @@
           </el-form-item>
           <el-form-item label="学历要求">
             <el-checkbox-group
-              v-model="viewObj.educationalRequireSelected"
-              @change="viewObj.onChangeEducationalRequire"
+              v-model="filterObj.educationalRequireSelected"
+              @change="filterObj.onChangeEducationalRequire"
             >
               <el-checkbox-button
-                v-for="(item, index) in viewObj.educationalRequireList"
+                v-for="(item, index) in filterObj.educationalRequireList"
                 :key="index"
                 :label="item.label"
                 :value="item.value"
@@ -176,10 +205,10 @@
               </el-checkbox-button>
             </el-checkbox-group>
           </el-form-item>
-          <el-form-item label="薪资待遇">
-            <el-checkbox-group v-model="viewObj.salaryRequireSelected" @change="viewObj.onChangeSalaryRequire">
+          <el-form-item label="薪资待遇[单选]">
+            <el-checkbox-group v-model="filterObj.salaryRequireSelected" @change="filterObj.onChangeSalaryRequire">
               <el-checkbox-button
-                v-for="(item, index) in viewObj.salaryRequireList"
+                v-for="(item, index) in filterObj.salaryRequireList"
                 :key="index"
                 :label="item.label"
                 :value="item.value"
@@ -189,9 +218,9 @@
             </el-checkbox-group>
           </el-form-item>
           <el-form-item label="求职意向">
-            <el-checkbox-group v-model="viewObj.intentionSelected" @change="viewObj.onChangeIntention">
+            <el-checkbox-group v-model="filterObj.intentionSelected" @change="filterObj.onChangeIntention">
               <el-checkbox-button
-                v-for="(item, index) in viewObj.intentionList"
+                v-for="(item, index) in filterObj.intentionList"
                 :key="index"
                 :label="item.label"
                 :value="item.value"
@@ -203,8 +232,8 @@
           <el-form-item>
             <el-button
               type="primary"
-              @click="viewObj.onQuery"
-              :disabled="!viewObj.isAuthorizedAndPositionSelectedValid()"
+              @click="filterObj.onQuery"
+              :disabled="!filterObj.isAuthorizedAndPositionSelectedValid()"
             >
               <el-icon style="vertical-align: middle">
                 <Search />
@@ -217,7 +246,7 @@
       <el-main style="width: 1444px" v-if="loginObj.authorized">
         <el-card
           shadow="hover"
-          v-for="(item, index) in viewObj.jobhunterArray"
+          v-for="(item, index) in viewObj.jobhunterList"
           :key="index"
           style="margin-bottom: 30px"
           body-class="vx-card-body"
@@ -229,7 +258,7 @@
                   badge-class="badge-class-match"
                   v-for="skillTag in viewObj.assembleTags(item.workSkillLabelSet)"
                   :key="skillTag.label"
-                  :is-dot="viewObj.isMatchsearchKeyword(skillTag.label)"
+                  :is-dot="viewObj.isMatchSearchKeyword(skillTag.label)"
                 >
                   <el-tag :type="skillTag.type" effect="dark" size="large" round>
                     {{ skillTag.label }}
@@ -242,7 +271,7 @@
             <el-col :span="12"> </el-col>
             <el-col :span="12" style="text-align: right">
               {{ item.degreeSchool?.schoolName }} - {{ item.degreeSchool?.degreeName }} |
-              {{ item.degreeSchool?.startDate }} - {{ item.degreeSchool?.endDate }}
+              {{ item.degreeSchool?.startDate }} ～ {{ item.degreeSchool?.endDate }}
             </el-col>
           </el-row>
           <el-row style="margin-bottom: 20px">
@@ -253,13 +282,14 @@
           <el-row class="vx-card-delimiter" v-for="(workItem, index) in item.workExperienceList" :key="index">
             <el-col :span="24" style="text-align: right">
               <span>
+                <span>{{ workItem?.startDate }} ～ {{ workItem?.endDate }} </span> |
                 <span v-html="viewObj.replaceNewLinesWithBr(workItem?.company)" /> -
                 <span v-html="viewObj.replaceNewLinesWithBr(workItem?.positionDesc)" /> -
                 {{ workItem?.serviceTime }}
               </span>
             </el-col>
             <el-col :span="24">
-              <span v-html="viewObj.replaceNewLinesWithBr(workItem.jobDesc)" />
+              <span v-html="viewObj.replaceNewLinesWithBr(workItem.responsibilityDesc)" />
             </el-col>
           </el-row>
           <template #footer>
@@ -268,10 +298,14 @@
                 {{ index + 1 }}. {{ item.jobhunterName }} | {{ item.ageDesc }} | {{ item.gender === 0 ? '女' : '男' }} |
                 {{ item.workExperience }} | {{ item.degreeDesc }} | {{ item.expectJob?.cityDesc }} |
                 {{ item.expectJob?.positionDesc }} | {{ item.expectJob?.salaryDesc }}| {{ item.intentionDesc }} |
-                {{ item.activationDesc || '-' }}
+                {{ item.livenessDesc || '-' }}
               </el-col>
               <el-col :span="2" style="text-align: right">
-                <el-button type="primary" @click="viewObj.onTriggerChat(index)" :disabled="item.triggerChatFlag">
+                <el-button
+                  type="primary"
+                  @click="viewObj.onTriggerChat(item.chatPayload)"
+                  :disabled="item.chatPayload.triggeredChatFlag"
+                >
                   打招呼
                 </el-button>
               </el-col>
@@ -287,14 +321,17 @@
 
         <el-collapse class="keyword-position">
           <el-collapse-item title="&nbsp&nbsp关键词">
-            <el-tag
-              v-for="keyword in viewObj.searchKeyword.text"
-              :key="keyword"
-              closable
-              @close="viewObj.searchKeyword.handleClose(keyword)"
-            >
-              {{ keyword }}
-            </el-tag>
+            <div style="padding: 5px">
+              <el-tag
+                style="margin-left: 2px"
+                v-for="keyword in viewObj.searchKeyword.text"
+                :key="keyword"
+                closable
+                @close="viewObj.searchKeyword.handleClose(keyword)"
+              >
+                {{ keyword }}
+              </el-tag>
+            </div>
             <el-input
               v-if="viewObj.searchKeyword.isAddFocus"
               ref="keywordInputRef"
@@ -324,7 +361,7 @@
           </template>
         </el-statistic>
         <div class="el-backtop" style="bottom: 100px; right: 70px">
-          <span>{{ viewObj.jobhunterArray.length }}</span>
+          <span>{{ viewObj.jobhunterList.length }}</span>
         </div>
         <el-backtop :bottom="50" :right="70" />
       </el-main>

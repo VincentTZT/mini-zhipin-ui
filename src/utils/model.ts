@@ -1,12 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-interface ResultModel<T> {
-  body?: T
-  code?: number
-  count?: number
-  success: boolean
-  message?: string
-}
-
 interface ResultModelZhipin<T> {
   zpData?: T
   code?: number
@@ -18,63 +10,76 @@ interface SelectorModel {
   value?: string | number
 }
 
-interface QrcodeKeyModel {
-  qrId: string
-  randKey?: string
-  secretKey?: string
-  shortRandKey?: string
+interface FilterModel {
+  majorList?: SelectorModel[]
+  livenessList?: SelectorModel[]
+  genderList?: SelectorModel[]
+  recentNotViewList?: SelectorModel[]
+  exchangeResumeWithColleagueList?: SelectorModel[]
+  schoolLevelList?: SelectorModel[]
+  switchJobFrequencyList?: SelectorModel[]
+  keyworkList?: SelectorModel[]
+  experienceRequireList?: SelectorModel[]
+  educationalRequireList?: SelectorModel[]
+  salaryRequireList?: SelectorModel[]
+  intentionList?: SelectorModel[]
+  firstDegree: number
 }
 
 interface Jobhunter {
-  jobhunterId?: String
-  jobhunterName?: string
-  activationDesc?: string
-  expectId: string
-  securityId: string
-  lid: string
-  suid: string
-  ageDesc?: string
-  gender?: number
-  workExperience?: string
-  degreeDesc?: String
-  intentionDesc?: string
-  expectJob?: expectJob
-  degreeSchool?: degreeSchool
-  workExperienceList: workExperience[]
-  workSkillLabelSet: string[]
-  selfEvaluation?: string
-  triggerChatFlag: boolean
-  pageNumber: number
+  jobhunterId?: string // 求职人id
+  jobhunterName?: string // 求职人姓名
+  livenessDesc?: string // 活跃状态
+  ageDesc?: string // 年龄描述
+  gender?: number // 性别
+  workExperience?: string // 工作经验
+  degreeDesc?: string // 学历描述
+  intentionDesc?: string // 求职意向描述
+  expectJob?: ExpectJob // 期望岗位
+  degreeSchool?: DegreeSchool // 学历学校
+  workExperienceList: WorkExperience[] // 工作经验列表
+  workSkillLabelSet: string[] // 工作技能标签列表
+  selfEvaluation?: string // 自我评价
+  chatPayload: ChatPayloadModel // 打招呼请求体
 }
 
-interface expectJob {
-  cityDesc?: string
-  positionDesc?: string
-  salaryDesc?: string
+interface ExpectJob {
+  cityDesc?: string // 城市描述
+  positionDesc?: string // 岗位描述
+  salaryDesc?: string // 薪资描述
 }
 
-interface degreeSchool {
-  startDate?: String
-  endDate?: String
-  schoolName?: String
-  degreeName?: String
+interface DegreeSchool {
+  startDate?: string // 开始时间
+  endDate?: string // 结束时间
+  schoolName?: string // 学校名称
+  degreeName?: string // 学历名称
 }
 
-interface workExperience {
-  company?: String
-  positionDesc?: String
-  startDate?: String
-  endDate?: String
-  departmentDesc?: String
-  serviceTime?: String
-  jobDesc?: String
-  workPerformance?: String
-  workEmphasis?: String
-  positionLabelSet: String[]
+interface WorkExperience {
+  company?: string // 公司名称
+  positionDesc?: string // 岗位描述
+  startDate?: string // 开始时间
+  endDate?: string // 结束时间
+  serviceTime?: string // 服务时长
+  responsibilityDesc?: string // 主要职责
 }
 
 interface ElementTagModel {
   label?: string
   type?: string
   match: boolean
+}
+
+interface ChatPayloadModel {
+  gid?: string | null
+  suid?: string | null
+  jid?: string | null
+  expectId?: number
+  lid?: string | null
+  greet?: string | null
+  from?: string | null
+  securityId?: string | null
+  customGreetingGuide?: number | null
+  triggeredChatFlag?: boolean // 触发聊天标志
 }

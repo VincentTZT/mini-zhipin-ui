@@ -1,10 +1,10 @@
 import axios from 'axios'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElNotification } from 'element-plus'
 import cookies from './cookies'
 
 // create an axios instance
 const service = axios.create({
-  timeout: 80000 // request timeout
+  timeout: 80000, // request timeout
 })
 
 // request interceptor
@@ -52,7 +52,25 @@ const request = (options: any, baseURL: string): Promise<any> => {
     }) as Promise<any>
 }
 
-export const requestZhipin = (options: any) => {
+export const requestZhipin = (options: any): Promise<ResultModelZhipin<any>> => {
+  options.url = import.meta.env.VITE_MINI_ZHIPIN_API_PREFIX
+  options.method = 'post'
   options.headers = { ...options.headers, traceid: getTraceid() }
-  return request(options, import.meta.env.VITE_VX_BOSS_API_PREFIX)
+  return request(options, import.meta.env.VITE_MINI_ZHIPIN_UI_PREFIX).then((res: any) => {
+    if (res.success) {
+      return res.body
+    } else {
+      errorCallBack(res)
+      return Promise.reject(res)
+    }
+  }) as Promise<ResultModelZhipin<any>>
+}
+
+export const errorCallBack = (res: any) => {
+  ElNotification({
+    title: 'Error',
+    message: (res.body ? JSON.stringify(res.body) : res.message) || res.message,
+    type: 'error',
+    duration: 2000,
+  })
 }

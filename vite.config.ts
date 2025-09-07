@@ -18,8 +18,8 @@ export default defineConfig(({ mode }) => {
       // host: '0.0.0.0',
       // port: 8081,
       proxy: {
-        [vite_env.VITE_VX_BOSS_API_PREFIX]: {
-          target: vite_env.VITE_VX_BOSS_API_URL,
+        [vite_env.VITE_MINI_ZHIPIN_UI_PREFIX]: {
+          target: vite_env.VITE_MINI_ZHIPIN_API_URL,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         }
