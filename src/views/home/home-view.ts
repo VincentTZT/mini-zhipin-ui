@@ -16,7 +16,7 @@ export default {
     const loginObj = reactive({
       authorized: false,
       cookieString: null as string | null,
-      phone: '15738909987' as string | null,
+      phone: null as string | null,
 
       rules: reactive<FormRules>({
         cookieString: [{ required: true, message: '请输入认证信息', trigger: 'blur' }],
@@ -279,8 +279,7 @@ export default {
     onMounted(() => {
       removeAllCookies()
       loginObj.authorized = false
-      loginObj.cookieString =
-        'ab_guid=ba268c5f-de6e-47b3-abbb-6fd73aa434d4; lastCity=101280100; wt2=DFLLX9xV1j0CM34VfNKiqoRq6l4txpRiB7dQ1jtcpgdmrOXV6KPayT2eEmqnxSYeiNGHju3V2vFXj8rypJ8mj1Q~~; wbg=1; zp_at=i4-g8vg1POE7A_RdQXR4kf7-HSVgxtkweqayKGNF1ig~; __g=-; Hm_lvt_194df3105ad7148dcf2b98a91b5e727a=1757094350,1757120915,1757142310,1757232745; Hm_lpvt_194df3105ad7148dcf2b98a91b5e727a=1757232745; HMACCOUNT=3C19152041F93063; bst=V2SdskEOH121ZgXdJsyBoRKSuw7DnSzQ~~|SdskEOH121ZgXdJsyBoRKSuw7DnVwQ~~; __c=1757232745; __a=93107989.1757003446.1757142310.1757232745.129.6.21.129'
+      loginObj.cookieString = null
       viewObj.jobhunterList = []
     })
 
