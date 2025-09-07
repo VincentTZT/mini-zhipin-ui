@@ -91,38 +91,41 @@ export default {
           return
         }
         filterObj.loading = true
-        ZhiPinApi.getFilterOptions(value).then((res: FilterModel) => {
-          filterObj.majorList = res.majorList || []
-          filterObj.livenessList = res.livenessList || []
-          filterObj.genderList = res.genderList || []
-          filterObj.recentNotViewList = res.recentNotViewList || []
-          filterObj.exchangeResumeWithColleagueList = res.exchangeResumeWithColleagueList || []
-          filterObj.schoolLevelList = res.schoolLevelList || []
-          filterObj.switchJobFrequencyList = res.switchJobFrequencyList || []
-          filterObj.keyworkList = res.keyworkList || []
-          filterObj.experienceRequireList = res.experienceRequireList || []
-          filterObj.educationalRequireList = res.educationalRequireList || []
-          filterObj.salaryRequireList = res.salaryRequireList || []
-          filterObj.intentionList = res.intentionList || []
-          filterObj.firstDegree = res.firstDegree
+        filterObj.displayFirstDegree = false
+        filterObj.firstDegreeChecked = false
+        viewObj.jobhunterList = []
+        ZhiPinApi.getFilterOptions(value)
+          .then((res: FilterModel) => {
+            filterObj.majorList = res.majorList || []
+            filterObj.livenessList = res.livenessList || []
+            filterObj.genderList = res.genderList || []
+            filterObj.recentNotViewList = res.recentNotViewList || []
+            filterObj.exchangeResumeWithColleagueList = res.exchangeResumeWithColleagueList || []
+            filterObj.schoolLevelList = res.schoolLevelList || []
+            filterObj.switchJobFrequencyList = res.switchJobFrequencyList || []
+            filterObj.keyworkList = res.keyworkList || []
+            filterObj.experienceRequireList = res.experienceRequireList || []
+            filterObj.educationalRequireList = res.educationalRequireList || []
+            filterObj.salaryRequireList = res.salaryRequireList || []
+            filterObj.intentionList = res.intentionList || []
+            filterObj.firstDegree = res.firstDegree
 
-          filterObj.majorSelected = [0]
-          filterObj.livenessSelected = [0]
-          filterObj.genderSelected = [0]
-          filterObj.recentNotViewSelected = [0]
-          filterObj.exchangeResumeWithColleagueSelected = [0]
-          filterObj.schoolLevelSelected = [0]
-          filterObj.switchJobFrequencySelected = [0]
-          filterObj.keyworkSelected = []
-          filterObj.experienceRequireSelected = [0]
-          filterObj.educationalRequireSelected = [0]
-          filterObj.salaryRequireSelected = [0]
-          filterObj.intentionSelected = [0]
-          filterObj.displayFirstDegree = false
-          filterObj.firstDegreeChecked = false
-          filterObj.loading = false
-          viewObj.jobhunterList = []
-        })
+            filterObj.majorSelected = [0]
+            filterObj.livenessSelected = [0]
+            filterObj.genderSelected = [0]
+            filterObj.recentNotViewSelected = [0]
+            filterObj.exchangeResumeWithColleagueSelected = [0]
+            filterObj.schoolLevelSelected = [0]
+            filterObj.switchJobFrequencySelected = [0]
+            filterObj.keyworkSelected = []
+            filterObj.experienceRequireSelected = [0]
+            filterObj.educationalRequireSelected = [0]
+            filterObj.salaryRequireSelected = [0]
+            filterObj.intentionSelected = [0]
+          })
+          .finally(() => {
+            filterObj.loading = false
+          })
       },
 
       ageRangeFormat: (value: number): string => value + '岁',
