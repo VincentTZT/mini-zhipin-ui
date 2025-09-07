@@ -11,8 +11,8 @@ export default defineConfig(({ mode }) => {
     plugins: [vue(), envParse()],
     resolve: {
       alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url))
-      }
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+      },
     },
     server: {
       // host: '0.0.0.0',
@@ -21,10 +21,13 @@ export default defineConfig(({ mode }) => {
         [vite_env.VITE_MINI_ZHIPIN_UI_PREFIX]: {
           target: vite_env.VITE_MINI_ZHIPIN_API_URL,
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '')
-        }
-      }
-    }
+          rewrite: (path) => path.replace(/^\/api/, ''),
+        },
+      },
+    },
+    esbuild: {
+      drop: vite_env.VITE_USER_NODE_ENV === 'production' ? ['console', 'debugger'] : [],
+    },
   }
 })
 // https://vitejs.dev/config/

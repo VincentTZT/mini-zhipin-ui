@@ -116,3 +116,6 @@ dist
 .pnp.*
 .vscode/extensions.json
 .vscode/settings.json
+
+.DS_Store
+env.d.ts

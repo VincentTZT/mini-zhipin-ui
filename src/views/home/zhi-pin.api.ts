@@ -1,5 +1,5 @@
 import { dayjs } from 'element-plus'
-import { requestZhipin } from '../../utils/request'
+import { requestZhipin } from '@/utils/request'
 
 export default class ZhiPinApi {
   static getPositionList = (): Promise<SelectorModel[]> => {

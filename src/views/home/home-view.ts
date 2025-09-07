@@ -23,9 +23,9 @@ export default {
         phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
       }),
 
-      onLogin: async (formRef: FormInstance) => {
+      onLogin: (formRef: FormInstance) => {
         loginObj.authorized = false
-        await formRef.validate((valid: boolean, fields: any) => {
+        formRef.validate((valid: boolean, fields: any) => {
           if (valid) {
             setZhiPinToken(loginObj.cookieString as string)
             localStorage.setItem('zhipin-phone', loginObj.phone as string)
@@ -121,6 +121,7 @@ export default {
           filterObj.displayFirstDegree = false
           filterObj.firstDegreeChecked = false
           filterObj.loading = false
+          viewObj.jobhunterList = []
         })
       },
 
