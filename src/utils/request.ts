@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import cookies from './cookies'
+import { AES_Encrypt, AES_Decrypt } from './aes-crypto'
 
 const env = import.meta.env
 
@@ -47,6 +48,11 @@ service.interceptors.response.use(
 // assemble request
 const request = (options: any, baseURL: string): Promise<any> => {
   // 合并baseURL到options中
+  if (options.data) {
+    options.data = {
+      msg: AES_Encrypt(env.VITE_MINI_ZHIPIN_NOTE_NAME, options.data),
+    }
+  }
   return service({ ...options, baseURL })
     .then((res) => res)
     .catch((error) => {
@@ -64,7 +70,7 @@ export const requestZhipin = async (options: any): Promise<ResultModelZhipin<any
   options.headers = { ...options.headers, traceid: getTraceid() }
   return request(options, env.VITE_MINI_ZHIPIN_UI_PREFIX).then((res: any) => {
     if (res.success) {
-      return res.body
+      return AES_Decrypt(env.VITE_MINI_ZHIPIN_NOTE_NAME, res.msg)
     } else {
       errorCallBack(res)
       return Promise.reject(res)

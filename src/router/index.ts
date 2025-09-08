@@ -7,7 +7,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  document.title = typeof to.meta.title === 'string' ? to.meta.title : '欣宝主题'
+  document.title = typeof to.meta.title === 'string' ? to.meta.title : 'MINI-ZHIPIN'
   next()
 })
 
