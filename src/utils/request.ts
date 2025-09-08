@@ -87,6 +87,11 @@ function requestAccount(): Promise<boolean> {
     env.VITE_MINI_ZHIPIN_UI_PREFIX
   ).then((res: any) => {
     console.log('account', res)
-    return res.isExpired
+    if (res.success) {
+      return res.body?.isExpired || false
+    } else {
+      errorCallBack(res)
+      return Promise.reject(res)
+    }
   }) as Promise<boolean>
 }
