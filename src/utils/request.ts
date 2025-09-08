@@ -17,7 +17,7 @@ service.interceptors.request.use(
       config.headers['zp_token'] = token
     }
     config.headers['zhipin-phone'] = localStorage.getItem('zhipin-phone')
-    config.headers['zhipin-note-id'] = env.VITE_MINI_ZHIPIN_NOTE_ID
+    config.headers['zhipin-note-name'] = env.VITE_MINI_ZHIPIN_NOTE_NAME
     return config
   },
   (error: any) => {
