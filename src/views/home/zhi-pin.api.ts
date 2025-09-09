@@ -60,6 +60,12 @@ export default class ZhiPinApi {
   }
 
   static getJobhunterList = (filterObj: any, pageNumber: number): Promise<Jobhunter[]> => {
+    if (checkSessionExpired()) {
+      localStorage.setItem('zhipin-login-expired', '已使用满6小时，请重新登陆')
+      window.location.reload()
+      return Promise.reject('已使用满6小时，请重新登陆')
+    }
+
     return requestZhipin({
       data: {
         method: 'GET',
@@ -177,4 +183,15 @@ function buildFilterParams(filterObj: any, pageNumber: number) {
     coverScreenMemory: 0,
     cardType: 0,
   }
+}
+
+function checkSessionExpired(): boolean {
+  const loginTime = localStorage.getItem('zhipin-login-timestamp')
+  if (loginTime) {
+    const currentTime = new Date().getTime()
+    const loginTimeInMillis = Number(loginTime)
+    const timeDiff = currentTime - loginTimeInMillis
+    return timeDiff >= 6 * 60 * 60 * 1000
+  }
+  return true
 }

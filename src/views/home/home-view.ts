@@ -281,6 +281,12 @@ export default {
     })
 
     onMounted(() => {
+      const expired = localStorage.getItem('zhipin-login-expired')
+      if (expired) {
+        ElMessage.error(expired)
+        localStorage.removeItem('zhipin-login-expired')
+        localStorage.removeItem('zhipin-login-timestamp')
+      }
       removeAllCookies()
       loginObj.authorized = false
       loginObj.cookieString = null
@@ -370,6 +376,7 @@ export default {
           viewObj.jobhunterList.length = 0
           filterObj.onChangePosition(filterObj.positionSelected)
           loginObj.authorized = true
+          localStorage.setItem('zhipin-login-timestamp', new Date().getTime().toString())
           ElMessage({
             message: '登陆成功',
             type: 'success',

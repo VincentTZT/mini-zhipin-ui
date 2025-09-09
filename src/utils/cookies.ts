@@ -2,7 +2,7 @@ import Cookies from 'js-cookie'
 import _ from 'lodash'
 
 const Cookie = Cookies.withConverter({
-  write: (value, name) => value
+  write: (value, name) => value,
 })
 
 export function setZhiPinToken(cookieString: string) {
@@ -10,7 +10,7 @@ export function setZhiPinToken(cookieString: string) {
     if (_.trim(item)) {
       const [key, value] = item.split('=')
       if (_.trim(key) && _.trim(value)) {
-        Cookie.set(key.trim(), value.trim())
+        Cookie.set(key.trim(), value.trim(), { expires: 0.25 })
       }
     }
   })
