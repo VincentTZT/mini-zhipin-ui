@@ -286,7 +286,7 @@ export default {
               errorCallBack(res)
             }
           })
-          .finally(() => loadTriggerChatUsed())
+          .finally(() => viewObj.triggerChatUsed++)
       },
     })
 
