@@ -226,6 +226,7 @@ export default {
       },
       pageNumber: 1,
       triggerChatUsed: 0,
+      chatCount: 0,
 
       onLoadMore: () => {
         if (viewObj.loading) return
@@ -258,6 +259,15 @@ export default {
             title: 'Error',
             message: '请先选择要筛选的岗位！',
             type: 'error',
+            duration: 2000,
+          })
+          return
+        }
+        if (viewObj.triggerChatUsed >= viewObj.chatCount) {
+          ElNotification({
+            title: 'Warning',
+            message: '沟通次数已用完！',
+            type: 'warning',
             duration: 2000,
           })
           return
@@ -312,6 +322,15 @@ export default {
     }
 
     function loadData() {
+      if (viewObj.triggerChatUsed >= viewObj.chatCount) {
+        ElNotification({
+          title: 'Warning',
+          message: '沟通次数已用完！',
+          type: 'warning',
+          duration: 2000,
+        })
+        return
+      }
       viewObj.loading = true
       ZhiPinApi.getJobhunterList(filterObj, viewObj.pageNumber)
         .then((res: Jobhunter[]) => {
@@ -386,9 +405,10 @@ export default {
     }
 
     function loadTriggerChatUsed() {
-      ZhiPinApi.getTriggerChatUsed().then(
-        (res: string | null) => (viewObj.triggerChatUsed = Number(res?.match(/\d+/g)?.join('')) || 0)
-      )
+      ZhiPinApi.getTriggerChatUsed().then((res: any) => {
+        viewObj.triggerChatUsed = Number(res?.used?.match(/\d+/g)?.join('')) || 0
+        viewObj.chatCount = parseInt(res?.usedCount.match(/共(\d+)个/)?.[1] || 0)
+      })
     }
 
     function splitSearchKeywords() {

@@ -16,17 +16,18 @@ export default class ZhiPinApi {
     }) as Promise<SelectorModel[]>
   }
 
-  static getTriggerChatUsed = (): Promise<string | null> => {
+  static getTriggerChatUsed = (): Promise<any> => {
     return requestZhipin({
       data: {
         method: 'GET',
         targetUrl: '/wapi/zpblock/privilege/my/detail?from=',
       },
     }).then((res: ResultModelZhipin<any>) => {
-      return res?.zpData?.currentPrivilegeUsed?.privileges
-        ?.filter((item: any) => item.name === '今日沟通权益消耗')?.[0]
-        ?.used?.toString()
-    }) as Promise<string | null>
+      return (
+        res?.zpData?.currentPrivilegeUsed?.privileges?.filter((item: any) => item.name === '今日沟通权益消耗')?.[0] ||
+        {}
+      )
+    }) as Promise<any>
   }
 
   static getFilterOptions = (encryptId: string): Promise<FilterModel> => {
