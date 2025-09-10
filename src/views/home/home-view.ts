@@ -272,21 +272,20 @@ export default {
           })
           return
         }
-        ZhiPinApi.triggerChar(chatPayload)
-          .then((res: string) => {
-            if (res === 'Success') {
-              chatPayload.triggeredChatFlag = true
-              ElNotification({
-                title: 'Success',
-                message: '打招呼成功！',
-                type: 'success',
-                duration: 2000,
-              })
-            } else {
-              errorCallBack(res)
-            }
-          })
-          .finally(() => viewObj.triggerChatUsed++)
+        ZhiPinApi.triggerChar(chatPayload).then((res: string) => {
+          if (res === 'Success') {
+            chatPayload.triggeredChatFlag = true
+            viewObj.triggerChatUsed++
+            ElNotification({
+              title: 'Success',
+              message: '打招呼成功！',
+              type: 'success',
+              duration: 2000,
+            })
+          } else {
+            errorCallBack(res)
+          }
+        })
       },
     })
 
