@@ -414,7 +414,7 @@ export default {
         background: 'rgba(0, 0, 0, 0.7)',
       })
       ZhiPinApi.getPositionList()
-        .then((res: SelectorModel[]) => {
+        .then(async (res: SelectorModel[]) => {
           filterObj.positionList.length = 0
           filterObj.positionList = [...res]
           filterObj.positionSelected = (filterObj.positionList[0]?.value as string) || ''
@@ -422,8 +422,8 @@ export default {
           filterObj.onChangePosition(filterObj.positionSelected)
           loginObj.authorized = true
           localStorage.setItem('zhipin-login-timestamp', new Date().getTime().toString())
-          loadTriggerChatUsed()
-          getFollowList()
+          await loadTriggerChatUsed()
+          await getFollowList()
 
           ElMessage({
             message: '登陆成功',
@@ -433,10 +433,13 @@ export default {
         .finally(() => fullScreenLoading.close())
     }
 
-    function loadTriggerChatUsed() {
-      ZhiPinApi.getTriggerChatUsed().then((res: any) => {
-        viewObj.triggerChatUsed = Number(res?.used?.match(/\d+/g)?.join('')) || 0
-        viewObj.chatCount = parseInt(res?.usedCount.match(/共(\d+)个/)?.[1] || 0)
+    async function loadTriggerChatUsed() {
+      return new Promise<void>((resolve) => {
+        ZhiPinApi.getTriggerChatUsed().then((res: any) => {
+          viewObj.triggerChatUsed = Number(res?.used?.match(/\d+/g)?.join('')) || 0
+          viewObj.chatCount = parseInt(res?.usedCount.match(/共(\d+)个/)?.[1] || 0)
+          setTimeout(() => resolve(), 1000)
+        })
       })
     }
 
@@ -449,13 +452,17 @@ export default {
       viewObj.searchKeyword.inputValue = ''
     }
 
-    function getFollowList() {
-      ZhiPinApi.getFollowList(viewObj.followListPage).then((res: any) => {
-        viewObj.followList = Array.from(new Set([...viewObj.followList, ...res?.jobhunterIds]))
-        if (res.hasMore) {
-          viewObj.followListPage++
-          getFollowList()
-        }
+    async function getFollowList() {
+      return new Promise<void>((resolve) => {
+        ZhiPinApi.getFollowList(viewObj.followListPage).then((res: any) => {
+          viewObj.followList = Array.from(new Set([...viewObj.followList, ...res?.jobhunterIds]))
+          if (res.hasMore) {
+            viewObj.followListPage++
+            getFollowList().then(() => resolve())
+          } else {
+            resolve()
+          }
+        })
       })
     }
   },
