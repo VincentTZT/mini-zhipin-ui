@@ -11,6 +11,7 @@ export default {
   setup() {
     const keywordInputRef = ref<InstanceType<typeof ElInput>>()
     const loginFormRef = ref<FormInstance>()
+    const keywordOnlyPanel = ref('keyword-only-panel')
 
     let fullScreenLoading = null as any
 
@@ -29,7 +30,7 @@ export default {
         formRef.validate((valid: boolean, fields: any) => {
           if (valid) {
             setZhiPinToken(loginObj.cookieString as string)
-            localStorage.setItem('zhipin-phone', loginObj.phone as string)
+            localStorage.setItem('zhipin-login-phone', loginObj.phone as string)
             login()
           } else {
             errorCallBack({
@@ -257,7 +258,8 @@ export default {
         return keywords.some((keyword) => content?.toLowerCase().includes(keyword))
       },
 
-      onTriggerChat: (chatPayload: ChatPayloadModel) => {
+      onTriggerChat: (chatPayload: ChatPayloadModel, item: Jobhunter) => {
+        item.triggerClicked = true
         if (!filterObj.isAuthorizedAndPositionSelectedValid()) {
           ElNotification({
             title: 'Error',
@@ -265,6 +267,7 @@ export default {
             type: 'error',
             duration: 2000,
           })
+          item.triggerClicked = false
           return
         }
         if (viewObj.triggerChatUsed >= viewObj.chatCount) {
@@ -274,43 +277,53 @@ export default {
             type: 'warning',
             duration: 2000,
           })
+          item.triggerClicked = false
           return
         }
-        ZhiPinApi.triggerChar(chatPayload).then((res: string) => {
-          if (res === 'Success') {
-            chatPayload.triggeredChatFlag = true
-            viewObj.triggerChatUsed++
-            ElNotification({
-              title: 'Success',
-              message: '打招呼成功！',
-              type: 'success',
-              duration: 2000,
-            })
-          } else {
-            errorCallBack(res)
-          }
-        })
+        ZhiPinApi.triggerChar(chatPayload)
+          .then((res: string) => {
+            if (res === 'Success') {
+              chatPayload.triggeredChatFlag = true
+              viewObj.triggerChatUsed++
+              ElNotification({
+                title: 'Success',
+                message: '打招呼成功！',
+                type: 'success',
+                duration: 2000,
+              })
+            } else {
+              errorCallBack(res)
+            }
+          })
+          .finally(() => {
+            item.triggerClicked = false
+          })
       },
 
-      onFollow: (followPayload: FollowPayloadModel) => {
-        ZhiPinApi.follow(followPayload).then((res: string) => {
-          if (res === 'Success') {
-            if (followPayload.followed) {
-              viewObj.followList.push(followPayload.encryptMarkId)
+      onFollow: (followPayload: FollowPayloadModel, item: Jobhunter) => {
+        item.triggerClicked = true
+        ZhiPinApi.follow(followPayload)
+          .then((res: string) => {
+            if (res === 'Success') {
+              if (followPayload.followed) {
+                viewObj.followList.push(followPayload.encryptMarkId)
+              } else {
+                viewObj.followList.splice(viewObj.followList.indexOf(followPayload.encryptMarkId), 1)
+              }
+              followPayload.followed = !followPayload.followed
+              ElNotification({
+                title: 'Success',
+                message: followPayload.followed ? '收藏成功！' : '取消收藏成功！',
+                type: 'success',
+                duration: 2000,
+              })
             } else {
-              viewObj.followList.splice(viewObj.followList.indexOf(followPayload.encryptMarkId), 1)
+              errorCallBack(res)
             }
-            followPayload.followed = !followPayload.followed
-            ElNotification({
-              title: 'Success',
-              message: followPayload.followed ? '取消收藏成功！' : '收藏成功！',
-              type: 'success',
-              duration: 2000,
-            })
-          } else {
-            errorCallBack(res)
-          }
-        })
+          })
+          .finally(() => {
+            item.triggerClicked = false
+          })
       },
     })
 
@@ -318,13 +331,16 @@ export default {
       const expired = localStorage.getItem('zhipin-login-expired')
       if (expired) {
         ElMessage.error(expired)
-        localStorage.removeItem('zhipin-login-expired')
-        localStorage.removeItem('zhipin-login-timestamp')
       }
       removeAllCookies()
       loginObj.authorized = false
       loginObj.cookieString = null
       viewObj.jobhunterList = []
+
+      const searchKeywords = localStorage.getItem('zhipin-search-keyword')
+      if (searchKeywords) {
+        viewObj.searchKeyword.text = JSON.parse(searchKeywords)
+      }
     })
 
     const scrollDisabled = computed<boolean>(() => viewObj.jobhunterList.length === 0)
@@ -337,6 +353,7 @@ export default {
       keywordInputRef,
       loginFormRef,
       highlightingImg,
+      keywordOnlyPanel,
     }
 
     function markHighlightText(content: string): string {
@@ -356,6 +373,7 @@ export default {
         return
       }
       viewObj.loading = true
+      localStorage.setItem('zhipin-search-keyword', JSON.stringify(viewObj.searchKeyword.text || []))
       ZhiPinApi.getJobhunterList(filterObj, viewObj.pageNumber)
         .then((res: Jobhunter[]) => {
           if (viewObj.searchKeyword.text.length > 0) {

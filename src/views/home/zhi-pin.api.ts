@@ -143,6 +143,7 @@ export default class ZhiPinApi {
           encryptMarkId: item.geekCard.encGeekId,
           securityId: item.geekCard.securityId,
         } as FollowPayloadModel,
+        triggerClicked: false,
       })) as Jobhunter[]
     }) as Promise<Jobhunter[]>
   }

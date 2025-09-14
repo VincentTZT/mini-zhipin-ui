@@ -43,6 +43,7 @@ interface Jobhunter {
   chatPayload: ChatPayloadModel // 打招呼请求体
   geekHighLightInfo?: string //  亮点
   followPayload: FollowPayloadModel // 关注请求体
+  triggerClicked: boolean
 }
 
 interface ExpectJob {

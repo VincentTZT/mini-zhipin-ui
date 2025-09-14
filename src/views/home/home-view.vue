@@ -307,7 +307,8 @@
               </el-col>
               <el-col :span="2" class="follow-button">
                 <el-button
-                  @click="viewObj.onFollow(item.followPayload)"
+                  v-if="!item.triggerClicked"
+                  @click="viewObj.onFollow(item.followPayload, item)"
                   :disabled="!filterObj.isAuthorizedAndPositionSelectedValid()"
                   link
                 >
@@ -319,9 +320,11 @@
                 </el-button>
               </el-col>
               <el-col :span="2" style="text-align: right">
+                <el-icon v-if="item.triggerClicked"><Loading /></el-icon>
                 <el-button
+                  v-else
                   type="primary"
-                  @click="viewObj.onTriggerChat(item.chatPayload)"
+                  @click="viewObj.onTriggerChat(item.chatPayload, item)"
                   :disabled="item.chatPayload.triggeredChatFlag"
                 >
                   打招呼
@@ -341,8 +344,8 @@
           style="height: 100px"
         />
 
-        <el-collapse class="keyword-position">
-          <el-collapse-item title="&nbsp&nbsp关键词">
+        <el-collapse class="keyword-position" v-model="keywordOnlyPanel">
+          <el-collapse-item title="&nbsp&nbsp关键词" name="keyword-only-panel">
             <div style="padding: 5px">
               <el-tag
                 style="margin-left: 2px"

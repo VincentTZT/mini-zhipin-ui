@@ -20,7 +20,9 @@ export function removeAllCookies() {
   document.cookie.split(/; ?/).forEach(function (cookie) {
     Cookies.remove(cookie.split('=')[0])
   })
-  localStorage.clear()
+  localStorage.removeItem('zhipin-login-phone')
+  localStorage.removeItem('zhipin-login-expired')
+  localStorage.removeItem('zhipin-login-timestamp')
 }
 
 export default Cookie
