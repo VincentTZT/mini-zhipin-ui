@@ -267,14 +267,19 @@
               </el-col>
             </el-row>
           </template>
-          <el-row justify="space-between" style="padding-bottom: 5px">
+          <el-row
+            justify="space-between"
+            style="padding-bottom: 5px"
+            v-for="(eduItem, index) in item.educationList"
+            :key="index"
+          >
             <el-col :span="12"> </el-col>
             <el-col :span="12" style="text-align: right">
-              {{ item.degreeSchool?.schoolName }} - {{ item.degreeSchool?.degreeName }} |
-              {{ item.degreeSchool?.startDate }} ～ {{ item.degreeSchool?.endDate }}
+              ● {{ eduItem.schoolName }} - {{ eduItem.major }} | {{ eduItem.degreeName }} | {{ eduItem.startDate }} ～
+              {{ eduItem.endDate }}
             </el-col>
           </el-row>
-          <el-row style="margin-bottom: 20px">
+          <el-row style="margin-bottom: 10px">
             <el-col :span="24">
               <span v-html="viewObj.replaceNewLinesWithBr(item.selfEvaluation)" />
             </el-col>
@@ -294,11 +299,24 @@
           </el-row>
           <template #footer>
             <el-row justify="space-between" class="vx-card-header">
-              <el-col :span="22" style="gap: 0.5rem; display: flex">
+              <el-col :span="20" style="gap: 0.5rem; display: flex">
                 {{ index + 1 }}. {{ item.jobhunterName }} | {{ item.ageDesc }} | {{ item.gender === 0 ? '女' : '男' }} |
                 {{ item.workExperience }} | {{ item.degreeDesc }} | {{ item.expectJob?.cityDesc }} |
                 {{ item.expectJob?.positionDesc }} | {{ item.expectJob?.salaryDesc }}| {{ item.intentionDesc }} |
                 {{ item.livenessDesc || '-' }}
+              </el-col>
+              <el-col :span="2" class="follow-button">
+                <el-button
+                  @click="viewObj.onFollow(item.followPayload)"
+                  :disabled="!filterObj.isAuthorizedAndPositionSelectedValid()"
+                  link
+                >
+                  <el-icon>
+                    <StarFilled v-if="item.followPayload.followed" />
+                    <Star v-else />
+                  </el-icon>
+                  <span> {{ item.followPayload.followed ? '取消收藏' : '收藏' }} </span>
+                </el-button>
               </el-col>
               <el-col :span="2" style="text-align: right">
                 <el-button
@@ -309,6 +327,10 @@
                   打招呼
                 </el-button>
               </el-col>
+            </el-row>
+            <el-row class="highlighting-col" v-if="item.geekHighLightInfo">
+              <el-image style="height: 30px" :src="highlightingImg" alt="highlighting" />
+              <span class="highlighting-text" v-html="viewObj.replaceNewLinesWithBr(item.geekHighLightInfo)" />
             </el-row>
           </template>
         </el-card>

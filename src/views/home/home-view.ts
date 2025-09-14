@@ -5,6 +5,7 @@ import { ElInput, ElMessage, ElNotification, ElLoading } from 'element-plus'
 import ZhiPinApi from '@/views/home/zhi-pin.api'
 import { setZhiPinToken, removeAllCookies } from '@/utils/cookies'
 import { errorCallBack } from '@/utils/request'
+import highlightingImg from '@/assets/highlighting.webp'
 
 export default {
   setup() {
@@ -193,6 +194,12 @@ export default {
 
     const viewObj = reactive({
       jobhunterList: [] as Jobhunter[],
+      followList: [] as string[],
+      pageNumber: 1,
+      triggerChatUsed: 0,
+      chatCount: 0,
+
+      followListPage: 1,
 
       elementTagTypes: ['primary', 'success', 'info', 'warning', 'danger'],
       loading: false,
@@ -224,18 +231,15 @@ export default {
           navigator.clipboard.writeText(viewObj.searchKeyword.text.join(' ')).catch((e) => errorCallBack(e))
         },
       },
-      pageNumber: 1,
-      triggerChatUsed: 0,
-      chatCount: 0,
 
       onLoadMore: () => {
         if (viewObj.loading) return
         loadData()
       },
 
-      replaceNewLinesWithBr: (text: string) => {
-        const content = text.replace(/\n/g, '<br>')
-        return viewObj.searchKeyword.text.length > 0 ? markHighlightText(content) : content
+      replaceNewLinesWithBr: (text?: string) => {
+        const content = text?.replace(/\n/g, '<br>')
+        return viewObj.searchKeyword.text.length > 0 ? markHighlightText(content || '') : content
       },
 
       assembleTags: (labels: string[]): ElementTagModel[] => {
@@ -287,6 +291,27 @@ export default {
           }
         })
       },
+
+      onFollow: (followPayload: FollowPayloadModel) => {
+        ZhiPinApi.follow(followPayload).then((res: string) => {
+          if (res === 'Success') {
+            if (followPayload.followed) {
+              viewObj.followList.push(followPayload.encryptMarkId)
+            } else {
+              viewObj.followList.splice(viewObj.followList.indexOf(followPayload.encryptMarkId), 1)
+            }
+            followPayload.followed = !followPayload.followed
+            ElNotification({
+              title: 'Success',
+              message: followPayload.followed ? '取消收藏成功！' : '收藏成功！',
+              type: 'success',
+              duration: 2000,
+            })
+          } else {
+            errorCallBack(res)
+          }
+        })
+      },
     })
 
     onMounted(() => {
@@ -308,16 +333,16 @@ export default {
       loginObj,
       filterObj,
       viewObj,
-      onMounted,
       scrollDisabled,
       keywordInputRef,
       loginFormRef,
+      highlightingImg,
     }
 
     function markHighlightText(content: string): string {
       const keywords = viewObj.searchKeyword.text.map((keyword) => keyword.toLowerCase())
       const regex = new RegExp(`(${keywords.join('|')})`, 'gi')
-      return content.replace(regex, (match) => `<span class="highlight">${match}</span>`)
+      return content.replace(regex, (match) => `<span class="search-keyword-text">${match}</span>`)
     }
 
     function loadData() {
@@ -344,9 +369,7 @@ export default {
                   type: 'warning',
                   duration: 2000,
                 })
-                setTimeout(() => {
-                  loadData()
-                }, 3000)
+                setTimeout(() => loadData(), (Math.floor(Math.random() * 4) + 3) * 1000)
                 return
               } else {
                 filterObj.filterLoopCount = 0
@@ -360,6 +383,11 @@ export default {
               filterObj.filterLoopCount = 0
             }
           }
+
+          res.map((item: Jobhunter) => {
+            item.followPayload.followed = viewObj.followList.includes(item.jobhunterId)
+            return item
+          })
 
           viewObj.jobhunterList = uniqueByProperty([...viewObj.jobhunterList, ...res], 'jobhunterId')
         })
@@ -385,7 +413,6 @@ export default {
         text: 'Loading',
         background: 'rgba(0, 0, 0, 0.7)',
       })
-      loadTriggerChatUsed()
       ZhiPinApi.getPositionList()
         .then((res: SelectorModel[]) => {
           filterObj.positionList.length = 0
@@ -395,6 +422,9 @@ export default {
           filterObj.onChangePosition(filterObj.positionSelected)
           loginObj.authorized = true
           localStorage.setItem('zhipin-login-timestamp', new Date().getTime().toString())
+          loadTriggerChatUsed()
+          getFollowList()
+
           ElMessage({
             message: '登陆成功',
             type: 'success',
@@ -417,6 +447,16 @@ export default {
         )
       }
       viewObj.searchKeyword.inputValue = ''
+    }
+
+    function getFollowList() {
+      ZhiPinApi.getFollowList(viewObj.followListPage).then((res: any) => {
+        viewObj.followList = Array.from(new Set([...viewObj.followList, ...res?.jobhunterIds]))
+        if (res.hasMore) {
+          viewObj.followListPage++
+          getFollowList()
+        }
+      })
     }
   },
 }

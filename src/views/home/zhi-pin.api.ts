@@ -16,6 +16,26 @@ export default class ZhiPinApi {
     }) as Promise<SelectorModel[]>
   }
 
+  static getFollowList = (pageNum: number): Promise<any> => {
+    return requestZhipin({
+      data: {
+        method: 'GET',
+        targetUrl: '/wapi/zprelation/bossTag/interestedList',
+        params: {
+          filter: '{"geek-apply-status":-1,"chat-status":-1,"contact-status":-1}',
+          page: pageNum,
+          encryptJobId: -1,
+          source: 2,
+        },
+      },
+    }).then((res: ResultModelZhipin<any>) => {
+      return {
+        jobhunterIds: (res?.zpData?.cardList?.map((item: any) => item.encryptGeekId) || []) as string[],
+        hasMore: res?.zpData?.hasMore || false,
+      }
+    }) as Promise<any>
+  }
+
   static getTriggerChatUsed = (): Promise<any> => {
     return requestZhipin({
       data: {
@@ -88,21 +108,22 @@ export default class ZhiPinApi {
           positionDesc: item.geekCard.expectPositionName,
           salaryDesc: item.geekCard.salary,
         } as ExpectJob,
-        degreeSchool: {
-          startDate: safeFormat(item.geekCard.geekEdu.startDate),
-          endDate: safeFormat(item.geekCard.geekEdu.endDate),
-          schoolName: item.geekCard.geekEdu.school,
-          degreeName: item.geekCard.geekEdu.major,
-        } as DegreeSchool,
+        educationList: item.geekCard.geekEdus.map((edu: any) => ({
+          startDate: edu.startDate?.substr(0, 4),
+          endDate: edu.endDate?.substr(0, 4),
+          schoolName: edu.school,
+          major: edu.major,
+          degreeName: edu.degreeName,
+        })) as Education[],
         workExperienceList: item.geekCard.geekWorks.map((work: any) => ({
           company: work.company,
           positionDesc: work.positionName,
-          startDate: safeFormat(work.startDate),
-          endDate: safeFormat(work.endDate),
+          startDate: work.startDate,
+          endDate: work.endDate,
           serviceTime: work.workTime,
           responsibilityDesc: work.responsibility,
         })) as WorkExperience[],
-        workSkillLabelSet: buildWorkSkillLabelSet(item.geekCard.geekWorks),
+        workSkillLabelSet: buildWorkSkillLabelSet(item.geekCard.geekWorks, item.geekCard.matches),
         selfEvaluation: item.geekCard.geekDesc.content,
         chatPayload: {
           gid: item.geekCard.encGeekId,
@@ -116,17 +137,51 @@ export default class ZhiPinApi {
           customGreetingGuide: -1,
           triggeredChatFlag: false,
         } as ChatPayloadModel,
+        geekHighLightInfo: item.geekCard.geekHighLightInfo,
+        followPayload: {
+          markType: 5,
+          encryptMarkId: item.geekCard.encGeekId,
+          securityId: item.geekCard.securityId,
+        } as FollowPayloadModel,
       })) as Jobhunter[]
     }) as Promise<Jobhunter[]>
   }
 
   static triggerChar = (chatPayload: ChatPayloadModel): Promise<string> => {
-    delete chatPayload.triggeredChatFlag
     return requestZhipin({
       data: {
         method: 'POST',
         targetUrl: '/wapi/zpjob/chat/start',
-        params: chatPayload,
+        params: {
+          gid: chatPayload.gid,
+          suid: chatPayload.suid,
+          jid: chatPayload.jid,
+          expectId: chatPayload.expectId,
+          lid: chatPayload.lid,
+          greet: chatPayload.greet,
+          from: chatPayload.from,
+          securityId: chatPayload.securityId,
+          customGreetingGuide: chatPayload.customGreetingGuide,
+        },
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      },
+    }).then((res: ResultModelZhipin<any>) => {
+      return res.message
+    }) as Promise<string>
+  }
+
+  static follow = (followPayload: FollowPayloadModel): Promise<string> => {
+    return requestZhipin({
+      data: {
+        method: 'POST',
+        targetUrl: '/wapi/zprelation/userMark/' + (followPayload.followed ? 'del' : 'add'),
+        params: {
+          markType: followPayload.markType,
+          encryptMarkId: followPayload.encryptMarkId,
+          securityId: followPayload.securityId,
+        },
         headers: {
           'content-type': 'application/x-www-form-urlencoded',
         },
@@ -150,17 +205,14 @@ function extractFilterOptions(
     })) as SelectorModel[]
 }
 
-function safeFormat(dateInput: string): string {
-  const d = dayjs(dateInput)
-  return d.isValid() ? d.format('YYYY-MM') : dateInput
-}
-
-function buildWorkSkillLabelSet(geekWorks: { workEmphasisList: string[] | null }[]): string[] {
-  return Array.from(
-    new Set(
-      geekWorks.flatMap((skillList) => skillList?.workEmphasisList || []).map((skill) => skill.replace(/\.js$/i, ''))
-    )
+function buildWorkSkillLabelSet(
+  geekWorks: { workEmphasisList: string[] | null }[],
+  matches: string[] | null
+): string[] {
+  const allSkills = [...geekWorks.flatMap((skillList) => skillList?.workEmphasisList || []), ...(matches || [])].map(
+    (skill) => skill.replace(/\.js$/i, '')
   )
+  return Array.from(new Set(allSkills))
 }
 
 function buildFilterParams(filterObj: any, pageNumber: number) {
