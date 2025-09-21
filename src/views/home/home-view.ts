@@ -258,7 +258,7 @@ export default {
         return keywords.some((keyword) => content?.toLowerCase().includes(keyword))
       },
 
-      onTriggerChat: (chatPayload: ChatPayloadModel, item: Jobhunter) => {
+      onTriggerChat: async (chatPayload: ChatPayloadModel, item: Jobhunter) => {
         item.triggerClicked = true
         if (!filterObj.isAuthorizedAndPositionSelectedValid()) {
           ElNotification({
@@ -271,14 +271,17 @@ export default {
           return
         }
         if (viewObj.triggerChatUsed >= viewObj.chatCount) {
-          ElNotification({
-            title: 'Warning',
-            message: '沟通次数已用完！',
-            type: 'warning',
-            duration: 2000,
-          })
-          item.triggerClicked = false
-          return
+          await loadTriggerChatUsed()
+          if (viewObj.triggerChatUsed >= viewObj.chatCount) {
+            ElNotification({
+              title: 'Warning',
+              message: '沟通次数已用完！',
+              type: 'warning',
+              duration: 2000,
+            })
+            item.triggerClicked = false
+            return
+          }
         }
         ZhiPinApi.triggerChar(chatPayload)
           .then((res: string) => {
@@ -362,15 +365,18 @@ export default {
       return content.replace(regex, (match) => `<span class="search-keyword-text">${match}</span>`)
     }
 
-    function loadData() {
+    async function loadData() {
       if (viewObj.triggerChatUsed >= viewObj.chatCount) {
-        ElNotification({
-          title: 'Warning',
-          message: '沟通次数已用完！',
-          type: 'warning',
-          duration: 2000,
-        })
-        return
+        await loadTriggerChatUsed()
+        if (viewObj.triggerChatUsed >= viewObj.chatCount) {
+          ElNotification({
+            title: 'Warning',
+            message: '沟通次数已用完！',
+            type: 'warning',
+            duration: 2000,
+          })
+          return
+        }
       }
       viewObj.loading = true
       localStorage.setItem('zhipin-search-keyword', JSON.stringify(viewObj.searchKeyword.text || []))
