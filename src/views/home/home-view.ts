@@ -127,6 +127,7 @@ export default {
           })
           .finally(() => {
             filterObj.loading = false
+            keywordOnlyPanel.value = 'keyword-only-panel'
           })
       },
 
