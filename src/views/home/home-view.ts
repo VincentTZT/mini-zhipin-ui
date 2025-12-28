@@ -362,7 +362,14 @@ export default {
 
     function markHighlightText(content: string): string {
       const keywords = viewObj.searchKeyword.text.map((keyword) => keyword.toLowerCase())
-      const regex = new RegExp(`(${keywords.join('|')})`, 'gi')
+
+      if (keywords.length === 0) {
+        return content
+      }
+
+      // 转义所有特殊字符
+      const escapedKeywords = keywords.map((keyword) => keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+      const regex = new RegExp(`(${escapedKeywords.join('|')})`, 'gi')
       return content.replace(regex, (match) => `<span class="search-keyword-text">${match}</span>`)
     }
 
