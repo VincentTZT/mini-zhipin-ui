@@ -253,7 +253,7 @@
         >
           <template #header>
             <el-row justify="space-between">
-              <el-col :span="24" style="gap: 0.5rem; display: flex">
+              <el-col :span="24" style="gap: 0.5rem; display: flex; flex-wrap: wrap">
                 <el-badge
                   badge-class="badge-class-match"
                   v-for="skillTag in viewObj.assembleTags(item.workSkillLabelSet)"
@@ -300,9 +300,10 @@
           <template #footer>
             <el-row justify="space-between" class="vx-card-header">
               <el-col :span="20" style="gap: 0.5rem; display: flex">
-                {{ index + 1 }}. {{ item.jobhunterName }} | {{ item.ageDesc }} | {{ item.gender === 0 ? '女' : '男' }} |
-                {{ item.workExperience }} | {{ item.degreeDesc }} | {{ item.expectJob?.cityDesc }} |
-                {{ item.expectJob?.positionDesc }} | {{ item.expectJob?.salaryDesc }}| {{ item.intentionDesc }} |
+                {{ Number(index) + 1 }}. {{ item.jobhunterName }} | {{ item.ageDesc }} |
+                {{ item.gender === 0 ? '女' : '男' }} | {{ item.workExperience }} | {{ item.degreeDesc }} |
+                {{ item.expectJob?.cityDesc }} | {{ item.expectJob?.positionDesc }} | {{ item.expectJob?.salaryDesc }}|
+                {{ item.intentionDesc }} |
                 {{ item.livenessDesc || '-' }}
               </el-col>
               <el-col :span="2" class="follow-button">
@@ -344,7 +345,12 @@
           style="height: 100px"
         />
 
-        <el-collapse class="keyword-position" v-model="keywordOnlyPanel">
+        <el-collapse 
+          class="keyword-position" 
+          v-model="keywordOnlyPanel" 
+          :style="{ cursor: 'move', top: collapsePosition.top + 'px', left: collapsePosition.left + 'px' }"
+          @mousedown="onDragStart"
+        >
           <el-collapse-item title="&nbsp&nbsp关键词" name="keyword-only-panel">
             <div style="padding: 5px">
               <el-tag

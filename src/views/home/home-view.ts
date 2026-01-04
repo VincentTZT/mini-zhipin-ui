@@ -2,18 +2,32 @@ import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import _ from 'lodash'
 import { ElInput, ElMessage, ElNotification, ElLoading } from 'element-plus'
+import draggable from 'vuedraggable'
 import ZhiPinApi from '@/views/home/zhi-pin.api'
 import { setZhiPinToken, removeAllCookies } from '@/utils/cookies'
 import { errorCallBack } from '@/utils/request'
 import highlightingImg from '@/assets/highlighting.webp'
 
 export default {
+  components: {
+    draggable
+  },
   setup() {
     const keywordInputRef = ref<InstanceType<typeof ElInput>>()
     const loginFormRef = ref<FormInstance>()
     const keywordOnlyPanel = ref('keyword-only-panel')
 
     let fullScreenLoading = null as any
+
+    // 用于悬浮拖拽的位置
+    const collapsePosition = reactive({
+      top: 150,
+      left: window.innerWidth - 450
+    })
+
+    // 拖拽相关变量
+    const isDragging = ref(false)
+    const startPosition = ref({ x: 0, y: 0 })
 
     const loginObj = reactive({
       authorized: false,
@@ -349,6 +363,29 @@ export default {
 
     const scrollDisabled = computed<boolean>(() => viewObj.jobhunterList.length === 0)
 
+    // 拖拽事件处理函数
+    const onDragStart = (e: MouseEvent) => {
+      isDragging.value = true
+      startPosition.value = {
+        x: e.clientX - collapsePosition.left,
+        y: e.clientY - collapsePosition.top
+      }
+      document.addEventListener('mousemove', onDragMove)
+      document.addEventListener('mouseup', onDragEnd)
+    }
+
+    const onDragMove = (e: MouseEvent) => {
+      if (!isDragging.value) return
+      collapsePosition.left = e.clientX - startPosition.value.x
+      collapsePosition.top = e.clientY - startPosition.value.y
+    }
+
+    const onDragEnd = () => {
+      isDragging.value = false
+      document.removeEventListener('mousemove', onDragMove)
+      document.removeEventListener('mouseup', onDragEnd)
+    }
+
     return {
       loginObj,
       filterObj,
@@ -358,6 +395,8 @@ export default {
       loginFormRef,
       highlightingImg,
       keywordOnlyPanel,
+      collapsePosition,
+      onDragStart
     }
 
     function markHighlightText(content: string): string {
