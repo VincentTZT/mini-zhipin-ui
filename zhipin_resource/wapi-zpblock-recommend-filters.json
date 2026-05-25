@@ -1,0 +1,961 @@
+
+// GET /wapi/zpblock/recommend/filters?jobId=68a5a7d346d8a5120nB53Nq5F1JW&source=1
+
+
+// response body
+
+{
+  "code": 0,
+  "message": "Success",
+  "zpData": {
+    "screenMemory": [{ "paramName": "school", "codes": [1102], "firstDegree": 999 }],
+    "vipFilter": {
+      "hideInfo": null,
+      "filters": [
+        {
+          "type": 2,
+          "name": "年龄",
+          "paramName": "age",
+          "explain": null,
+          "rightExplain": null,
+          "start": 16,
+          "end": 45,
+          "stepLength": 1,
+          "unit": "",
+          "noLimit": { "value": -1, "desc": "不限" }
+        },
+        {
+          "type": 1,
+          "name": "院校",
+          "paramName": "school",
+          "explain": null,
+          "rightExplain": null,
+          "radio": -1,
+          "options": [
+            {
+              "code": 0,
+              "name": "不限",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null,
+              "hideFirstDegree": true
+            },
+            {
+              "code": 1104,
+              "name": "985",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null,
+              "hideFirstDegree": false
+            },
+            {
+              "code": 1103,
+              "name": "211",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null,
+              "hideFirstDegree": false
+            },
+            {
+              "code": 1102,
+              "name": "双一流院校",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null,
+              "hideFirstDegree": false
+            },
+            {
+              "code": 1105,
+              "name": "留学",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null,
+              "hideFirstDegree": false
+            },
+            {
+              "code": 1106,
+              "name": "国内外名校",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null,
+              "hideFirstDegree": false
+            },
+            {
+              "code": 1107,
+              "name": "公办本科",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null,
+              "hideFirstDegree": false
+            }
+          ],
+          "high": 0,
+          "maxLine": 0,
+          "defaultSelected": null,
+          "firstDegreeOption": {
+            "code": 999,
+            "paramName": "firstDegree",
+            "name": "只看第一学历",
+            "tip": "第一学历为全日制本科"
+          }
+        },
+        {
+          "type": 1,
+          "name": "活跃度",
+          "paramName": "activation",
+          "explain": "[单选]",
+          "rightExplain": null,
+          "radio": 1,
+          "options": [
+            {
+              "code": 0,
+              "name": "不限",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 2501,
+              "name": "刚刚活跃",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 2502,
+              "name": "今日活跃",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 2503,
+              "name": "3日内活跃",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 2504,
+              "name": "本周活跃",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 2505,
+              "name": "本月活跃",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            }
+          ],
+          "high": 0,
+          "maxLine": 0,
+          "defaultSelected": null
+        },
+        {
+          "type": 1,
+          "name": "近期没有看过",
+          "paramName": "recentNotView",
+          "explain": null,
+          "rightExplain": null,
+          "radio": 1,
+          "options": [
+            {
+              "code": 0,
+              "name": "不限",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 2301,
+              "name": "近14天没有",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            }
+          ],
+          "high": 0,
+          "maxLine": 0,
+          "defaultSelected": null
+        },
+        {
+          "type": 1,
+          "name": "是否与同事交换简历",
+          "paramName": "exchangeResumeWithColleague",
+          "explain": null,
+          "rightExplain": null,
+          "radio": 1,
+          "options": [
+            {
+              "code": 0,
+              "name": "不限",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 1301,
+              "name": "近一个月没有",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            }
+          ],
+          "high": 0,
+          "maxLine": 0,
+          "defaultSelected": null
+        },
+        {
+          "type": 1,
+          "name": "专业",
+          "paramName": "major",
+          "explain": null,
+          "rightExplain": "网页端支持修改【专业】筛选项",
+          "radio": -1,
+          "options": [
+            {
+              "code": 0,
+              "name": "不限",
+              "tip": "本科或以上学历就读于相关专业",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 60007,
+              "name": "电力电气类",
+              "tip": "本科或以上学历就读于相关专业",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 60008,
+              "name": "电子信息类",
+              "tip": "本科或以上学历就读于相关专业",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 60015,
+              "name": "机械类",
+              "tip": "本科或以上学历就读于相关专业",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 60016,
+              "name": "计算机类",
+              "tip": "本科或以上学历就读于相关专业",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 60034,
+              "name": "自动化类",
+              "tip": "本科或以上学历就读于相关专业",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": -1,
+              "name": "修改筛选专业",
+              "tip": "",
+              "useDefine": true,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            }
+          ],
+          "high": 0,
+          "maxLine": 0,
+          "defaultSelected": null
+        },
+        {
+          "type": 1,
+          "name": "牛人关键词",
+          "paramName": "keyword1",
+          "explain": null,
+          "rightExplain": "",
+          "radio": -1,
+          "options": [
+            {
+              "code": 424784,
+              "name": "JAVA",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 424785,
+              "name": "C++",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 424786,
+              "name": "PYTHON",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 424787,
+              "name": "GO",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 424788,
+              "name": "数据结构",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 424789,
+              "name": "分布式",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 424790,
+              "name": "多线程",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 424791,
+              "name": "架构设计",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 424792,
+              "name": "算法",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            }
+          ],
+          "high": 36,
+          "maxLine": 1,
+          "defaultSelected": null
+        },
+        {
+          "type": 1,
+          "name": "性别",
+          "paramName": "gender",
+          "explain": null,
+          "rightExplain": null,
+          "radio": 1,
+          "options": [
+            {
+              "code": 0,
+              "name": "不限",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 2201,
+              "name": "男",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 2202,
+              "name": "女",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            }
+          ],
+          "high": 0,
+          "maxLine": 0,
+          "defaultSelected": null
+        },
+        {
+          "type": 1,
+          "name": "跳槽频率",
+          "paramName": "switchJobFrequency",
+          "explain": "[单选]",
+          "rightExplain": null,
+          "radio": 1,
+          "options": [
+            {
+              "code": 0,
+              "name": "不限",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 1201,
+              "name": "5年少于3份",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 1202,
+              "name": "平均每份工作大于1年",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            }
+          ],
+          "high": 0,
+          "maxLine": 0,
+          "defaultSelected": null
+        }
+      ]
+    },
+    "normalFilter": {
+      "hideInfo": null,
+      "filters": [
+        {
+          "type": 1,
+          "name": "经验要求",
+          "paramName": "experience",
+          "explain": null,
+          "rightExplain": null,
+          "radio": -1,
+          "options": [
+            {
+              "code": 0,
+              "name": "不限",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 109,
+              "name": "在校/应届",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 110,
+              "name": "25年毕业",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 111,
+              "name": "26年毕业",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 112,
+              "name": "26年后毕业",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 103,
+              "name": "1年以内",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 104,
+              "name": "1-3年",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 105,
+              "name": "3-5年",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 106,
+              "name": "5-10年",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 107,
+              "name": "10年以上",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            }
+          ],
+          "high": 0,
+          "maxLine": 0,
+          "defaultSelected": null
+        },
+        {
+          "type": 1,
+          "name": "学历要求",
+          "paramName": "degree",
+          "explain": null,
+          "rightExplain": null,
+          "radio": -1,
+          "options": [
+            {
+              "code": 0,
+              "name": "不限",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": [
+                { "paramName": "school", "codes": [0, 1104, 1103, 1102, 1105, 1106, 1107] },
+                { "paramName": "major", "codes": [0, 60007, 60008, 60015, 60016, 60034] }
+              ],
+              "hideInfos": null
+            },
+            {
+              "code": 209,
+              "name": "初中及以下",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": [
+                {
+                  "paramName": "school",
+                  "codes": [0, 1104, 1103, 1102, 1105, 1106, 1107],
+                  "disableTip": "仅支持本科及以上学历进行筛选"
+                },
+                {
+                  "paramName": "major",
+                  "codes": [0, 60007, 60008, 60015, 60016, 60034],
+                  "disableTip": "仅支持本科及以上学历进行筛选"
+                }
+              ],
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 208,
+              "name": "中专/中技",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": [
+                {
+                  "paramName": "school",
+                  "codes": [0, 1104, 1103, 1102, 1105, 1106, 1107],
+                  "disableTip": "仅支持本科及以上学历进行筛选"
+                },
+                {
+                  "paramName": "major",
+                  "codes": [0, 60007, 60008, 60015, 60016, 60034],
+                  "disableTip": "仅支持本科及以上学历进行筛选"
+                }
+              ],
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 206,
+              "name": "高中",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": [
+                {
+                  "paramName": "school",
+                  "codes": [0, 1104, 1103, 1102, 1105, 1106, 1107],
+                  "disableTip": "仅支持本科及以上学历进行筛选"
+                },
+                {
+                  "paramName": "major",
+                  "codes": [0, 60007, 60008, 60015, 60016, 60034],
+                  "disableTip": "仅支持本科及以上学历进行筛选"
+                }
+              ],
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 202,
+              "name": "大专",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": [
+                {
+                  "paramName": "school",
+                  "codes": [0, 1104, 1103, 1102, 1105, 1106, 1107],
+                  "disableTip": "仅支持本科及以上学历进行筛选"
+                },
+                {
+                  "paramName": "major",
+                  "codes": [0, 60007, 60008, 60015, 60016, 60034],
+                  "disableTip": "仅支持本科及以上学历进行筛选"
+                }
+              ],
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 203,
+              "name": "本科",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": [
+                { "paramName": "school", "codes": [0, 1104, 1103, 1102, 1105, 1106, 1107] },
+                { "paramName": "major", "codes": [0, 60007, 60008, 60015, 60016, 60034] }
+              ],
+              "hideInfos": null
+            },
+            {
+              "code": 204,
+              "name": "硕士",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": [
+                { "paramName": "school", "codes": [0, 1104, 1103, 1102, 1105, 1106, 1107] },
+                { "paramName": "major", "codes": [0, 60007, 60008, 60015, 60016, 60034] }
+              ],
+              "hideInfos": null
+            },
+            {
+              "code": 205,
+              "name": "博士",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": [
+                { "paramName": "school", "codes": [0, 1104, 1103, 1102, 1105, 1106, 1107] },
+                { "paramName": "major", "codes": [0, 60007, 60008, 60015, 60016, 60034] }
+              ],
+              "hideInfos": null
+            }
+          ],
+          "high": 0,
+          "maxLine": 0,
+          "defaultSelected": null
+        },
+        {
+          "type": 1,
+          "name": "求职意向",
+          "paramName": "intention",
+          "explain": null,
+          "rightExplain": null,
+          "radio": -1,
+          "options": [
+            {
+              "code": 0,
+              "name": "不限",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 701,
+              "name": "离职-随时到岗",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 702,
+              "name": "在职-暂不考虑",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 703,
+              "name": "在职-考虑机会",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 704,
+              "name": "在职-月内到岗",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            }
+          ],
+          "high": 0,
+          "maxLine": 0,
+          "defaultSelected": null
+        },
+        {
+          "type": 1,
+          "name": "薪资待遇",
+          "paramName": "salary",
+          "explain": "[单选]",
+          "rightExplain": null,
+          "radio": 1,
+          "options": [
+            {
+              "code": 0,
+              "name": "不限",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 402,
+              "name": "3K以下",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 403,
+              "name": "3-5K",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 404,
+              "name": "5-10K",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 405,
+              "name": "10-20K",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 406,
+              "name": "20-50K",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            },
+            {
+              "code": 407,
+              "name": "50K以上",
+              "tip": "",
+              "useDefine": false,
+              "disableType": 0,
+              "disableInfos": null,
+              "enableInfos": null,
+              "hideInfos": null
+            }
+          ],
+          "high": 0,
+          "maxLine": 0,
+          "defaultSelected": null
+        }
+      ]
+    },
+    "hitBlockPageGray": false,
+    "billUrl": "",
+    "guideBlockPage": false,
+    "title": "",
+    "hitRefinedGeekFreeGray": false,
+    "ba": null,
+    "shortBzbRoute": false,
+    "vipPromoteDesc": null,
+    "riskTip": "筛选功能仅供您分析招聘数据，请勿有招聘歧视行为，如因民族、种族、性别等原因不合理差别待遇候选人。",
+    "newBzbGuideExpGroup": 0,
+    "newBzbGuideDialog": null
+  }
+}
