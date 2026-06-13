@@ -1,10 +1,6 @@
 <template>
   <el-container class="vx-container">
-    <ul
-      v-infinite-scroll="viewObj.onLoadMore"
-      :infinite-scroll-immediate="false"
-      :infinite-scroll-disabled="scrollDisabled"
-    >
+    <ul v-infinite-scroll="viewObj.onLoadMore" :infinite-scroll-immediate="false">
       <el-header height="auto">
         <el-form
           name="loginForm"
@@ -345,13 +341,13 @@
           style="height: 100px"
         />
 
-        <el-collapse 
-          class="keyword-position" 
-          v-model="keywordOnlyPanel" 
+        <el-collapse
+          class="keyword-position"
+          v-model="searchKeywordOnlyPanel"
           :style="{ cursor: 'move', top: collapsePosition.top + 'px', left: collapsePosition.left + 'px' }"
           @mousedown="onDragStart"
         >
-          <el-collapse-item title="&nbsp&nbsp关键词" name="keyword-only-panel">
+          <el-collapse-item title="&nbsp&nbsp关键词" name="search-keyword-only-panel">
             <div style="padding: 5px">
               <el-tag
                 style="margin-left: 2px"
@@ -365,7 +361,7 @@
             </div>
             <el-input
               v-if="viewObj.searchKeyword.isAddFocus"
-              ref="keywordInputRef"
+              ref="searchKeywordInputRef"
               v-model="viewObj.searchKeyword.inputValue"
               class="w-20"
               @keyup.enter="viewObj.searchKeyword.inputHandleEnter"
@@ -384,6 +380,46 @@
             </div>
           </el-collapse-item>
         </el-collapse>
+        <el-collapse
+          class="keyword-position"
+          v-model="positionKeywordOnlyPanel"
+          :style="{ cursor: 'move', top: collapsePosition.top + 200 + 'px', left: collapsePosition.left + 'px' }"
+          @mousedown="onDragStart"
+        >
+          <el-collapse-item title="&nbsp&nbsp岗位关键字" name="position-keyword-only-panel">
+            <div style="padding: 5px">
+              <el-tag
+                style="margin-left: 2px"
+                v-for="keyword in viewObj.positionKeyword.text"
+                :key="keyword"
+                closable
+                @close="viewObj.positionKeyword.handleClose(keyword)"
+              >
+                {{ keyword }}
+              </el-tag>
+            </div>
+            <el-input
+              v-if="viewObj.positionKeyword.isAddFocus"
+              ref="positionKeywordInputRef"
+              v-model="viewObj.positionKeyword.inputValue"
+              class="w-20"
+              @keyup.enter="viewObj.positionKeyword.inputHandleEnter"
+              @blur="viewObj.positionKeyword.inputHandleClose"
+            />
+            <div v-else style="padding-left: 10px">
+              <el-button class="button-new-tag" size="small" @click="viewObj.positionKeyword.showInput">
+                ➕ 岗位关键字
+              </el-button>
+              <el-button class="button-new-tag" size="small" @click="viewObj.positionKeyword.cleanKeyword">
+                ➖ 清空
+              </el-button>
+              <el-button class="button-new-tag" size="small" @click="viewObj.positionKeyword.copyKeyword">
+                📃 一键复制
+              </el-button>
+            </div>
+          </el-collapse-item>
+        </el-collapse>
+
         <el-statistic :value="viewObj.triggerChatUsed" class="chat-used-position" value-style="color: red">
           <template #suffix>
             <el-icon style="vertical-align: -0.125em">

@@ -10,19 +10,21 @@ import highlightingImg from '@/assets/highlighting.webp'
 
 export default {
   components: {
-    draggable
+    draggable,
   },
   setup() {
-    const keywordInputRef = ref<InstanceType<typeof ElInput>>()
+    const searchKeywordInputRef = ref<InstanceType<typeof ElInput>>()
+    const positionKeywordInputRef = ref<InstanceType<typeof ElInput>>()
     const loginFormRef = ref<FormInstance>()
-    const keywordOnlyPanel = ref('keyword-only-panel')
+    const searchKeywordOnlyPanel = ref('search-keyword-only-panel')
+    const positionKeywordOnlyPanel = ref('position-keyword-only-panel')
 
     let fullScreenLoading = null as any
 
     // 用于悬浮拖拽的位置
     const collapsePosition = reactive({
       top: 150,
-      left: window.innerWidth - 450
+      left: window.innerWidth - 450,
     })
 
     // 拖拽相关变量
@@ -110,6 +112,21 @@ export default {
         filterObj.displayFirstDegree = false
         filterObj.firstDegreeChecked = false
         viewObj.jobhunterList = []
+
+        const searchKeywords = localStorage.getItem('zhipin-search-keyword' + '-' + value)
+        if (searchKeywords) {
+          viewObj.searchKeyword.text = JSON.parse(searchKeywords)
+        } else {
+          viewObj.searchKeyword.text = []
+        }
+
+        const positionKeywords = localStorage.getItem('zhipin-position-keyword' + '-' + value)
+        if (positionKeywords) {
+          viewObj.positionKeyword.text = JSON.parse(positionKeywords)
+        } else {
+          viewObj.positionKeyword.text = []
+        }
+
         ZhiPinApi.getFilterOptions(value)
           .then((res: FilterModel) => {
             filterObj.majorList = res.majorList || []
@@ -140,8 +157,9 @@ export default {
             filterObj.intentionSelected = [0]
           })
           .finally(() => {
+            searchKeywordOnlyPanel.value = 'search-keyword-only-panel'
+            positionKeywordOnlyPanel.value = 'position-keyword-only-panel'
             filterObj.loading = false
-            keywordOnlyPanel.value = 'keyword-only-panel'
           })
       },
 
@@ -237,7 +255,7 @@ export default {
         showInput: () => {
           viewObj.searchKeyword.isAddFocus = true
           nextTick(() => {
-            keywordInputRef.value!.input!.focus()
+            searchKeywordInputRef.value!.input!.focus()
           })
         },
         cleanKeyword: () => {
@@ -247,8 +265,37 @@ export default {
           navigator.clipboard.writeText(viewObj.searchKeyword.text.join(' ')).catch((e) => errorCallBack(e))
         },
       },
+      positionKeyword: {
+        text: [] as string[],
+        inputValue: '',
+        isAddFocus: false,
+        inputRef: ref<InstanceType<typeof ElInput>>(),
+        inputHandleEnter: () => {
+          splitPositionKeywords()
+        },
+        inputHandleClose: () => {
+          splitPositionKeywords()
+          viewObj.positionKeyword.isAddFocus = false
+        },
+        handleClose: (keyword: string) => {
+          viewObj.positionKeyword.text.splice(viewObj.positionKeyword.text.indexOf(keyword), 1)
+        },
+        showInput: () => {
+          viewObj.positionKeyword.isAddFocus = true
+          nextTick(() => {
+            positionKeywordInputRef.value!.input!.focus()
+          })
+        },
+        cleanKeyword: () => {
+          viewObj.positionKeyword.text.length = 0
+        },
+        copyKeyword: () => {
+          navigator.clipboard.writeText(viewObj.positionKeyword.text.join(' ')).catch((e) => errorCallBack(e))
+        },
+      },
 
       onLoadMore: () => {
+        if (viewObj.jobhunterList.length === 0) return
         if (viewObj.loading) return
         loadData()
       },
@@ -354,21 +401,14 @@ export default {
       loginObj.authorized = false
       loginObj.cookieString = null
       viewObj.jobhunterList = []
-
-      const searchKeywords = localStorage.getItem('zhipin-search-keyword')
-      if (searchKeywords) {
-        viewObj.searchKeyword.text = JSON.parse(searchKeywords)
-      }
     })
-
-    const scrollDisabled = computed<boolean>(() => viewObj.jobhunterList.length === 0)
 
     // 拖拽事件处理函数
     const onDragStart = (e: MouseEvent) => {
       isDragging.value = true
       startPosition.value = {
         x: e.clientX - collapsePosition.left,
-        y: e.clientY - collapsePosition.top
+        y: e.clientY - collapsePosition.top,
       }
       document.addEventListener('mousemove', onDragMove)
       document.addEventListener('mouseup', onDragEnd)
@@ -390,13 +430,14 @@ export default {
       loginObj,
       filterObj,
       viewObj,
-      scrollDisabled,
-      keywordInputRef,
+      searchKeywordInputRef,
+      positionKeywordInputRef,
       loginFormRef,
       highlightingImg,
-      keywordOnlyPanel,
+      searchKeywordOnlyPanel,
+      positionKeywordOnlyPanel,
       collapsePosition,
-      onDragStart
+      onDragStart,
     }
 
     function markHighlightText(content: string): string {
@@ -426,33 +467,49 @@ export default {
         }
       }
       viewObj.loading = true
-      localStorage.setItem('zhipin-search-keyword', JSON.stringify(viewObj.searchKeyword.text || []))
+      localStorage.setItem(
+        'zhipin-search-keyword' + '-' + filterObj.positionSelected,
+        JSON.stringify(viewObj.searchKeyword.text || [])
+      )
+      localStorage.setItem(
+        'zhipin-position-keyword' + '-' + filterObj.positionSelected,
+        JSON.stringify(viewObj.positionKeyword.text || [])
+      )
       ZhiPinApi.getJobhunterList(filterObj, viewObj.pageNumber)
         .then((res: Jobhunter[]) => {
+          if (viewObj.positionKeyword.text.length > 0) {
+            const positionKeywords = viewObj.positionKeyword.text.map((keyword) => keyword.toLowerCase())
+            res = res.filter((item: Jobhunter) => {
+              const positionDesc = item.expectJob?.positionDesc || ''
+              return positionKeywords.some((keyword) => positionDesc.toLowerCase().includes(keyword))
+            })
+          }
+
           if (viewObj.searchKeyword.text.length > 0) {
             res = res.filter((item: Jobhunter) => viewObj.isMatchSearchKeyword(JSON.stringify(item)))
-            if (res.length === 0) {
-              if (filterObj.filterLoopCount < 2) {
-                filterObj.filterLoopCount++
-                ElNotification({
-                  title: 'Warning',
-                  message: `没有符合条件的求职人，正在第${filterObj.filterLoopCount + 1}轮查找！`,
-                  type: 'warning',
-                  duration: 2000,
-                })
-                setTimeout(() => loadData(), (Math.floor(Math.random() * 4) + 3) * 1000)
-                return
-              } else {
-                filterObj.filterLoopCount = 0
-                ElNotification({
-                  title: 'Warning',
-                  message: '无法找到符合条件的求职人, 请调整关键字后重新查询！',
-                  type: 'warning',
-                })
-              }
+          }
+
+          if (res.length === 0 && (viewObj.searchKeyword.text.length > 0 || viewObj.positionKeyword.text.length > 0)) {
+            if (filterObj.filterLoopCount < 2) {
+              filterObj.filterLoopCount++
+              ElNotification({
+                title: 'Warning',
+                message: `没有符合条件的求职人，正在第${filterObj.filterLoopCount + 1}轮查找！`,
+                type: 'warning',
+                duration: 2000,
+              })
+              setTimeout(() => loadData(), (Math.floor(Math.random() * 4) + 3) * 1000)
+              return
             } else {
               filterObj.filterLoopCount = 0
+              ElNotification({
+                title: 'Warning',
+                message: '无法找到符合条件的求职人, 请调整关键字后重新查询！',
+                type: 'warning',
+              })
             }
+          } else {
+            filterObj.filterLoopCount = 0
           }
 
           res.map((item: Jobhunter) => {
@@ -521,6 +578,17 @@ export default {
         )
       }
       viewObj.searchKeyword.inputValue = ''
+    }
+
+    function splitPositionKeywords() {
+      if (_.trim(viewObj.positionKeyword.inputValue)) {
+        viewObj.positionKeyword.text = Array.from(
+          new Set(
+            viewObj.positionKeyword.text.concat(viewObj.positionKeyword.inputValue.split(/[\s,，]+/).filter(Boolean))
+          )
+        )
+      }
+      viewObj.positionKeyword.inputValue = ''
     }
 
     async function getFollowList() {

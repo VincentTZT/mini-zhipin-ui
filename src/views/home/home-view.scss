@@ -1,7 +1,3 @@
-.vx-container {
-  position: absolute;
-}
-
 .vx-card-header * {
   font-weight: bold;
   font-size: medium;
@@ -67,11 +63,16 @@
 
 .el-collapse-item__header {
   height: 30px !important;
-  width: 20% !important;
+  width: 28% !important;
+  white-space: nowrap;
 }
 
 .el-collapse-item__header.is-active {
   width: 100% !important;
+}
+
+.el-collapse-item__title {
+  white-space: nowrap;
 }
 
 .el-collapse-item__content {
