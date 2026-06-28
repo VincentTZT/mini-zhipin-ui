@@ -190,6 +190,20 @@ export default class ZhiPinApi {
       return res.message
     }) as Promise<string>
   }
+
+  static getExpectLocationCodeByJobId = (jobId: string): Promise<string> => {
+    return requestZhipin({
+      data: {
+        method: 'GET',
+        targetUrl: '/wapi/zpjob/job/f1/select/job/citys',
+        params: {
+          encryptJobId: jobId,
+        },
+      },
+    }).then(
+      (res: ResultModelZhipin<any>) => (res?.zpData?.businessDistrict?.[0]?.code || '') as string
+    ) as Promise<string>
+  }
 }
 
 function extractFilterOptions(
@@ -217,6 +231,8 @@ function buildWorkSkillLabelSet(
 
 function buildFilterParams(filterObj: any, pageNumber: number) {
   return {
+    cityCode: filterObj.expectLocationCode, // 单选
+    onlyThisCityCode: filterObj.expectLocationCode, // 单选
     jobId: filterObj.positionSelected, // 单选
     age: [filterObj.ageRange[0], filterObj.ageRange[1] === 46 ? -1 : filterObj.ageRange[1]],
     activation: filterObj.livenessSelected[0], // 单选

@@ -66,6 +66,8 @@ export default {
       loading: false,
 
       positionSelected: '',
+      expectLocationCode: '',
+      expectLocationName: '',
       positionList: [] as SelectorModel[],
 
       ageRange: [18, 46],
@@ -109,9 +111,19 @@ export default {
           return
         }
         filterObj.loading = true
+        filterObj.expectLocationCode = ''
         filterObj.displayFirstDegree = false
         filterObj.firstDegreeChecked = false
-        viewObj.jobhunterList = []
+        filterObj.expectLocationName =
+          extractLocationName(
+            filterObj.positionList.find((item: SelectorModel) => item.value === value)?.label as string
+          ) || ''
+
+        ZhiPinApi.getExpectLocationCodeByJobId(value).then((res: string) => {
+          filterObj.expectLocationCode = res
+        })
+
+        viewObj.jobhunterList.length = 0
 
         const searchKeywords = localStorage.getItem('zhipin-search-keyword' + '-' + value)
         if (searchKeywords) {
@@ -475,8 +487,17 @@ export default {
         'zhipin-position-keyword' + '-' + filterObj.positionSelected,
         JSON.stringify(viewObj.positionKeyword.text || [])
       )
+
       ZhiPinApi.getJobhunterList(filterObj, viewObj.pageNumber)
         .then((res: Jobhunter[]) => {
+          // filter by expect location name
+          if (filterObj.expectLocationName) {
+            res = res.filter((item: Jobhunter) =>
+              item.expectJob?.cityDesc?.toLowerCase().includes(filterObj.expectLocationName.toLowerCase())
+            )
+          }
+
+          // filter by position keywords
           if (viewObj.positionKeyword.text.length > 0) {
             const positionKeywords = viewObj.positionKeyword.text.map((keyword) => keyword.toLowerCase())
             res = res.filter((item: Jobhunter) => {
@@ -485,6 +506,7 @@ export default {
             })
           }
 
+          // filter by search keywords
           if (viewObj.searchKeyword.text.length > 0) {
             res = res.filter((item: Jobhunter) => viewObj.isMatchSearchKeyword(JSON.stringify(item)))
           }
@@ -546,7 +568,6 @@ export default {
           filterObj.positionList.length = 0
           filterObj.positionList = [...res]
           filterObj.positionSelected = (filterObj.positionList[0]?.value as string) || ''
-          viewObj.jobhunterList.length = 0
           filterObj.onChangePosition(filterObj.positionSelected)
           loginObj.authorized = true
           localStorage.setItem('zhipin-login-timestamp', new Date().getTime().toString())
@@ -603,6 +624,15 @@ export default {
           }
         })
       })
+    }
+
+    // extract location name from label, e.g. "前端工程师_北京（15-25K）" => "北京"
+    function extractLocationName(label: string): string | null {
+      const underscoreIdx = label.lastIndexOf('_')
+      if (underscoreIdx === -1) return null
+      const bracketIdx = label.indexOf('（', underscoreIdx)
+      if (bracketIdx === -1) return null
+      return label.substring(underscoreIdx + 1, bracketIdx)
     }
   },
 }
